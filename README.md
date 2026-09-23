@@ -11,11 +11,15 @@ An all-in-one, 3D learning platform for networking. Every domain sits as a node 
 | Routing Protocols (static, OSPF, EIGRP, BGP) | L3 | Two-AS routed mesh |
 | IPv6 | L3 | Ring |
 | Wireless (RF, Wi-Fi 6/7, WLC, WPA3) | L1–L2 | WLC + APs with radio waves |
+| **Juniper Mist AI** *(deep dive)*: SLEs, Marvis, vBLE, Wired/WAN Assurance, campus fabric, Access Assurance | L1–L7 | Mist cloud, Marvis, EX, SSR, APs |
 | DNS (resolution, records, DNSSEC, DoH/DoT) | L7 | Root → TLD → authoritative tree |
 | IP Services (DHCP, NAT, NTP, SNMP, FHRP) | L3–L7 | Star |
 | Network Security (ACLs, NGFW, IPsec, 802.1X, Zero Trust) | L2–L7 | Defence-in-depth shells |
+| **PKI & Certificates** *(deep dive)*: crypto, X.509, CA hierarchy, SCEP/EST/ACME, CRL/OCSP, TLS, EAP-TLS | L5–L7 | Root → intermediate/issuing CAs → endpoints, OCSP |
+| **Cisco ISE Infrastructure** *(deep dive)*: personas, 802.1X/MAB, policy sets, profiling, guest/BYOD/posture, TrustSec, TACACS+ | L2–L7 | PAN/MnT, PSNs, NADs, endpoints, AD, pxGrid |
 | Data Centre (spine-leaf, VXLAN/EVPN, ACI, storage) | L2–L3 | Spine-leaf Clos fabric |
-| SD-WAN (overlay, app-aware routing, SASE) | L3–L7 | Hub-and-spoke with controller |
+| **Cisco ACI Data Centre** *(deep dive)*: APIC, tenant model, access policies, contracts, L3Out, Multi-Pod/Site, API | L2–L7 | APIC cluster, spines, leaves, EPGs, L3Out, PBR |
+| **SD-WAN Concepts** *(deep dive)*: planes, OMP, TLOCs, PnP, control/data/AAR policy, security, Cloud OnRamp, MRF | L3–L7 | Manager/Validator/Controller, hub and branch edges |
 | MPLS & Service Provider (L3VPN, SR) | L2.5 | P/PE/CE ring |
 | Quality of Service | L2–L3 | Layered |
 | Cloud Networking (VPC, transit, K8s) | L3–L7 | Transit gateway hub |
@@ -27,7 +31,8 @@ An all-in-one, 3D learning platform for networking. Every domain sits as a node 
 - **A 3D topology for each domain:** packets move along the links. Drag to rotate, scroll to zoom.
 - **Lessons:** organised into modules, with key points and config/CLI examples. You can mark each lesson complete.
 - **Quizzes:** instant feedback with an explanation for every answer. Your best score is remembered.
-- **Learning paths:** Network Associate, Enterprise, Data Centre & Cloud, Service Provider and Security Engineer.
+- **Deep dives:** in-depth tracks for PKI, SD-WAN, Cisco ISE, Cisco ACI and Juniper Mist, with 5–6 modules each and a "Deep dives" filter on the home page.
+- **Learning paths:** Network Associate, Enterprise & Campus, Data Centre & Cloud, Identity & Zero Trust, AI-Driven Wireless Campus, Service Provider and Security Engineer.
 - **Subnet Lab:** an IPv4 CIDR calculator with a binary view.
 - **Search:** covers every lesson, key point and CLI snippet.
 - **Progress tracking:** stored in the browser's `localStorage`.
@@ -55,6 +60,6 @@ js/app.js         routing, rendering, progress, search, quiz, subnet lab
 
 ## Adding content
 
-Everything you learn from lives in `js/data.js`. To add a lesson, append `{ t, body, points, cli? }` to a module's `lessons` array. To add a domain, add an object to `domains` with a unique `id`, a `color` and a `topo` layout. The available layouts are `star`, `campus`, `mesh`, `ring`, `tree`, `layers`, `spineleaf`, `hubspoke`, `wireless` and `cloud`. The new domain appears automatically on the 3D map, in the grid, in search and in the quiz.
+Everything you learn from lives in `js/data.js`. To add a lesson, append `{ t, body, points, cli? }` to a module's `lessons` array. To add a domain, add an object to `domains` with a unique `id`, a `color` and a `topo` layout. The available layouts are `star`, `campus`, `mesh`, `ring`, `tree`, `layers`, `spineleaf`, `hubspoke`, `wireless`, `cloud`, `pki`, `ise`, `aci` and `mist`. Set `deep: true` to mark a domain as a deep dive. The new domain appears automatically on the 3D map, in the grid, in search and in the quiz.
 
 Three.js (r128) is loaded from cdnjs.

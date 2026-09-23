@@ -82,7 +82,7 @@ h1, h2, h3 { font-family: var(--display); font-weight: 600; letter-spacing: 0.01
 
 /* ---------- Hero */
 .hero {
-  position: relative; overflow: hidden;
+  position: relative; overflow: hidden; isolation: isolate;
   height: clamp(560px, 82vh, 780px);
   border-bottom: 1px solid var(--line-soft);
   background:
@@ -92,7 +92,7 @@ h1, h2, h3 { font-family: var(--display); font-weight: 600; letter-spacing: 0.01
 }
 #hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; cursor: grab; touch-action: pan-y; }
 #hero-canvas:active { cursor: grabbing; }
-.label-layer { position: absolute; inset: 0; pointer-events: none; }
+.label-layer { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
 .hero-copy {
   position: relative; z-index: 2; pointer-events: none;
   padding: clamp(40px, 8vh, 88px) 0 0 var(--edge);
@@ -155,19 +155,25 @@ h1, h2, h3 { font-family: var(--display); font-weight: 600; letter-spacing: 0.01
 .chip:hover { color: var(--text); }
 .chip.is-on { background: var(--text); color: var(--ink); border-color: var(--text); }
 .domain-grid {
-  display: grid; gap: 1px;
+  display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  background: var(--line-soft); border: 1px solid var(--line-soft); border-radius: var(--radius); overflow: hidden;
+  border-top: 1px solid var(--line-soft); border-left: 1px solid var(--line-soft);
 }
 .tile {
   display: flex; flex-direction: column; gap: 10px;
   padding: 22px 22px 20px; background: var(--ink);
+  border-right: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft);
   text-decoration: none; position: relative; transition: background 0.2s;
 }
 .tile:hover { background: var(--surface); }
-.tile-top { display: flex; align-items: center; gap: 10px; font: 500 11px/1 var(--mono); color: var(--faint); letter-spacing: 0.06em; }
+.tile-top { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font: 500 11px/1 var(--mono); color: var(--faint); letter-spacing: 0.06em; }
 .tile-top .port { width: 9px; height: 9px; border-radius: 2px; background: var(--c); box-shadow: 0 0 10px var(--c); }
 .tile-top .lvl { margin-left: auto; }
+.deep-badge {
+  margin-left: auto; color: var(--c); border: 1px solid color-mix(in srgb, var(--c) 55%, transparent);
+  border-radius: 4px; padding: 3px 6px; letter-spacing: 0.08em; text-transform: uppercase; font-size: 10px;
+}
+.deep-badge + .lvl { margin-left: 0; }
 .tile h3 { font-size: 21px; }
 .tile p { margin: 0; color: var(--muted); font-size: 14px; flex: 1; }
 .tile-meta { font: 12px/1 var(--mono); color: var(--faint); }

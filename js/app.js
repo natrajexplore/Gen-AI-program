@@ -90,7 +90,7 @@
     var grid = $("#domain-grid");
     grid.innerHTML = "";
     DOMAINS.forEach(function (d) {
-      if (levelFilter !== "all" && d.level !== levelFilter) return;
+      if (levelFilter === "deep" ? !d.deep : levelFilter !== "all" && d.level !== levelFilter) return;
       var s = domainStats(d);
       var a = el("a", "tile");
       a.href = "#" + d.id;
@@ -98,6 +98,7 @@
       var top = el("div", "tile-top");
       top.appendChild(el("span", "port"));
       top.appendChild(el("span", null, d.layers + " · " + d.proto));
+      if (d.deep) top.appendChild(el("span", "deep-badge", "Deep dive"));
       top.appendChild(el("span", "lvl", d.level));
       a.appendChild(top);
       a.appendChild(el("h3", null, d.name));
@@ -324,7 +325,7 @@
     document.title = d.name + " · NetVerse Academy";
     var view = $("#view-domain");
     view.style.setProperty("--c", d.color);
-    $("#d-eyebrow").textContent = d.layers + " · " + d.proto + " · " + d.level;
+    $("#d-eyebrow").textContent = d.layers + " · " + d.proto + " · " + d.level + (d.deep ? " · Deep dive" : "");
     $("#d-title").textContent = d.name;
     $("#d-tagline").textContent = d.tagline;
     var ls = lessonsOf(d);

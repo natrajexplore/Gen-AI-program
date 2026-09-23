@@ -422,6 +422,157 @@ window.NETVERSE = {
       ]
     },
     {
+      id: "mist",
+      name: "Juniper Mist AI",
+      short: "Mist",
+      color: "#C7D7F5",
+      layers: "L1–L7",
+      proto: "AIOps · Cloud",
+      level: "Advanced",
+      deep: true,
+      hours: 16,
+      topo: "mist",
+      tagline: "Deep dive into Juniper Mist (HPE): the microservices cloud, SLEs, Marvis AI, Wi-Fi and vBLE location, Wired and WAN Assurance, campus fabric, Access Assurance and APIs.",
+      modules: [
+        {
+          title: "Mist Cloud Architecture",
+          lessons: [
+            {
+              t: "A microservices cloud as the management plane",
+              body: "Juniper Mist (Juniper Networks is now part of HPE) manages access points, EX switches, SRX firewalls and Session Smart Routers from a cloud built on microservices. Features ship continuously without controller upgrades. Devices send rich telemetry to the cloud, where Mist AI analyses it. User traffic never goes through the cloud; only management and telemetry do.",
+              points: [
+                "Hierarchy: Organisation → Sites → Devices; site groups for scale",
+                "Templates (WLAN, switch, WAN edge) keep configuration consistent across sites",
+                "Devices are claimed by claim code or bulk-activated with an order's activation code",
+                "API-first: everything in the portal is also available through REST, webhooks and WebSockets"
+              ]
+            },
+            {
+              t: "Service Level Expectations (SLEs)",
+              body: "SLEs measure what users actually experience rather than device uptime. Each SLE has a goal, for example time-to-connect under 2 seconds, and shows the percentage of user-minutes that met it. Failures are broken down by classifiers (DHCP, association, authentication, DNS…) so you can see the root cause straight away.",
+              points: [
+                "Wireless SLEs: time to connect, successful connects, coverage, roaming, throughput, capacity, AP health",
+                "Wired SLEs: throughput, successful connects, switch health",
+                "WAN SLEs: WAN edge health, WAN link health, application health",
+                "Drill from an org to a site, an AP or a single client"
+              ]
+            }
+          ]
+        },
+        {
+          title: "Marvis & AIOps",
+          lessons: [
+            {
+              t: "Marvis Virtual Network Assistant",
+              body: "Marvis is Mist's AI assistant. You can ask it questions in plain language, such as 'why is Priya's laptop having trouble?' or 'list APs with high CPU', and it pulls answers across wireless, wired and WAN telemetry. The Marvis query language lets you run precise searches when you need them.",
+              points: [
+                "Conversational troubleshooting over any client, device or site",
+                "Pulls in dynamic packet captures, automatically collected when failures occur",
+                "Feeds support tickets with relevant data automatically"
+              ]
+            },
+            {
+              t: "Marvis Actions and Minis",
+              body: "Marvis Actions detect problems proactively and suggest fixes: a missing VLAN on a switch port, a bad cable, port flaps, persistently failing clients, authentication or DHCP server failures, AP offline events, and more. Some can be fixed with one click or automatically. Marvis Minis is a digital experience twin: it runs synthetic user tests from APs and switches to find problems before users do.",
+              points: [
+                "Missing VLAN detection correlates AP client VLANs with switch trunk config",
+                "Actions are validated after remediation and closed automatically",
+                "Minis run DHCP, DNS, ARP, authentication and application reachability probes on idle infrastructure"
+              ]
+            }
+          ]
+        },
+        {
+          title: "Mist Wireless & Location",
+          lessons: [
+            {
+              t: "Wi-Fi Assurance and AI-driven RRM",
+              body: "Mist Wi-Fi Assurance pairs Mist access points with cloud analytics. Radio Resource Management uses reinforcement learning on the coverage and capacity SLEs to change channels and power, rather than only reacting to interference. A dedicated scanning radio on many models monitors RF and security without disturbing clients.",
+              points: [
+                "Band steering, dynamic VLANs and Multi PSK (per-user or per-device keys) per WLAN",
+                "WPA3, OWE and 802.1X with any RADIUS server, or with Mist Access Assurance",
+                "Mist Edge tunnels traffic to the data centre (guest anchoring, L2 extension) when needed"
+              ]
+            },
+            {
+              t: "Virtual BLE and indoor location",
+              body: "Mist APs include a multi-element directional BLE antenna array. Virtual BLE (vBLE) creates virtual beacons in software, so no battery beacons are needed. Machine learning combines received signal strength with angle information to locate BLE devices and apps for wayfinding, proximity and asset tracking.",
+              points: [
+                "Mist SDK for mobile apps; zones and location analytics",
+                "Asset tags for tracking equipment",
+                "Floor plans with AP placement are what make location work"
+              ]
+            }
+          ]
+        },
+        {
+          title: "Wired, Campus Fabric & WAN",
+          lessons: [
+            {
+              t: "Wired Assurance with EX switches",
+              body: "EX switches onboard to Mist with a claim code or an existing Junos configuration. Port profiles, dynamic port configuration based on LLDP or RADIUS attributes, and switch templates let you configure hundreds of switches as one. Wired SLEs and Marvis Actions (bad cable, port flap, loop, missing VLAN) extend AIOps to the access layer.",
+              points: [
+                "Dynamic port profiles automatically configure ports for APs, phones and cameras",
+                "Virtual Chassis management and remote shell from the cloud",
+                "Junos config stays visible; additional CLI can be pushed from templates"
+              ]
+            },
+            {
+              t: "Campus fabric with EVPN-VXLAN",
+              body: "Mist builds standards-based campus fabrics in a few steps: EVPN multihoming (collapsed core), core-distribution, or campus fabric IP Clos down to the access layer. It generates the underlay, BGP EVPN overlay and VRFs, then verifies the fabric. This replaces spanning tree and MC-LAG in the campus.",
+              points: [
+                "Group-based policy with VXLAN-GBP at the access layer",
+                "The same EVPN concepts as the data centre: type-2 and type-5 routes, ESI multihoming",
+                "Topology view with BGP and link health"
+              ]
+            },
+            {
+              t: "WAN Assurance with SSR and SRX",
+              body: "Session Smart Routers (from the 128 Technology acquisition) use Secure Vector Routing. They route per session without tunnels, and the first packet of each session carries metadata that lets the routers along the path make application-aware decisions. SRX firewalls also integrate for secure SD-WAN branches. WAN SLEs and application visibility complete the Mist AI story from client to cloud.",
+              points: [
+                "No IPsec overlay tunnels, so there is less packet overhead",
+                "Application policies define which networks can reach which applications",
+                "Hub-and-spoke or mesh defined in WAN edge templates"
+              ]
+            }
+          ]
+        },
+        {
+          title: "Access Assurance & Automation",
+          lessons: [
+            {
+              t: "Mist Access Assurance (cloud NAC)",
+              body: "Access Assurance is a cloud-delivered NAC service. Mist APs and switches proxy 802.1X to Mist's authentication service over RadSec (RADIUS over TLS), so no on-premises RADIUS server is needed. It supports EAP-TLS and EAP-TTLS with identity providers (Microsoft Entra ID, Okta, Google Workspace), MDM integrations and dynamic VLAN/role assignment.",
+              points: [
+                "Auth policy rules map labels (certificate attributes, IdP groups, MAC labels) to VLANs/roles",
+                "Import your CA so client certificates are trusted",
+                "Mist Edge can act as an on-premises auth proxy for resilience"
+              ]
+            },
+            {
+              t: "APIs, webhooks and infrastructure as code",
+              body: "Every Mist function is available through the REST API. Webhooks and WebSocket streams deliver events such as client joins, alarms and audit logs in real time to tools like ServiceNow, Splunk or Slack. The Terraform provider and Python SDK (mistapi) let you manage organisations, sites and templates as code.",
+              points: [
+                "Create API tokens per user or org with least-privilege roles",
+                "Use site variables in templates, e.g. {{mgmt_vlan}}",
+                "Global cloud instances: pick the correct API host for your region"
+              ],
+              cli: "curl -H \"Authorization: Token $MIST_TOKEN\" \\\n  https://api.mist.com/api/v1/sites/$SITE_ID/stats/devices"
+            }
+          ]
+        }
+      ],
+      quiz: [
+        { q: "What do Mist SLEs primarily measure?", o: ["Device uptime", "User experience against goals", "Licence usage", "CPU temperature"], a: 1, why: "SLEs track how often users' experience meets the defined goal." },
+        { q: "Marvis Actions do what?", o: ["Upgrade firmware only", "Proactively detect problems and recommend or apply fixes", "Replace RADIUS", "Design floor plans"], a: 1, why: "Actions surface issues like missing VLANs or bad cables." },
+        { q: "Virtual BLE removes the need for…", o: ["Access points", "Battery-powered beacons", "Floor plans", "Wi-Fi"], a: 1, why: "vBLE creates software-defined beacons from the AP's antenna array." },
+        { q: "Session Smart Router's key difference from tunnel-based SD-WAN?", o: ["Uses GRE only", "Tunnel-free Secure Vector Routing", "Requires MPLS", "No encryption support"], a: 1, why: "SVR carries session metadata without overlay tunnels." },
+        { q: "How does Mist Access Assurance receive authentication requests?", o: ["TACACS+", "RADIUS over TLS (RadSec) via Mist devices", "LDAP", "SNMP"], a: 1, why: "APs and switches proxy 802.1X securely to the cloud." },
+        { q: "Which Mist feature runs synthetic tests from the infrastructure?", o: ["Marvis Minis", "vBLE", "Mist Edge", "Site groups"], a: 0, why: "Minis act as a digital experience twin." },
+        { q: "User data traffic in a Mist deployment goes…", o: ["Always through the Mist cloud", "Directly on the local network (cloud is management/telemetry)", "Only through Mist Edge", "Through the SLE engine"], a: 1, why: "Only management and telemetry go to the cloud unless you tunnel via Mist Edge." }
+      ]
+    },
+    {
       id: "dns",
       name: "DNS",
       short: "DNS",
@@ -650,6 +801,332 @@ window.NETVERSE = {
       ]
     },
     {
+      id: "pki",
+      name: "PKI & Certificates",
+      short: "PKI",
+      color: "#F472B6",
+      layers: "L5–L7",
+      proto: "X.509 · TLS",
+      level: "Advanced",
+      deep: true,
+      hours: 16,
+      topo: "pki",
+      tagline: "Deep dive into public key infrastructure: cryptography, X.509, CA hierarchies, enrollment, revocation, and certificates in TLS, EAP-TLS and IPsec.",
+      modules: [
+        {
+          title: "Cryptography Foundations",
+          lessons: [
+            {
+              t: "Symmetric vs asymmetric cryptography",
+              body: "Symmetric ciphers such as AES use one shared key and are fast enough for bulk data. The hard part is sharing that key safely. Asymmetric algorithms (RSA, ECC) use a key pair: what one key does, only the other can undo. Real protocols use asymmetric crypto to authenticate and agree a key, then switch to symmetric encryption.",
+              points: [
+                "AES-128/256 in GCM mode gives confidentiality and integrity together",
+                "RSA 2048/3072 vs ECDSA P-256/P-384: ECC gives equal strength with far smaller keys",
+                "(EC)DHE key exchange gives forward secrecy: stolen private keys can't decrypt past sessions",
+                "Post-quantum algorithms (ML-KEM, ML-DSA) are being standardised and rolled out in hybrid modes"
+              ]
+            },
+            {
+              t: "Hashes and digital signatures",
+              body: "A hash function (SHA-256, SHA-384) turns any input into a fixed-size fingerprint. Changing one bit changes the whole output. To sign, the owner hashes the data and signs that hash with the private key. Anyone with the public key can verify that the data is unchanged and came from the key holder.",
+              points: [
+                "Signatures give integrity, authentication and non-repudiation",
+                "SHA-1 and MD5 are broken for signatures; never accept them in certificates",
+                "A certificate is simply a signed statement: 'this public key belongs to this name'"
+              ]
+            }
+          ]
+        },
+        {
+          title: "X.509 Certificates",
+          lessons: [
+            {
+              t: "Anatomy of a certificate",
+              body: "An X.509 v3 certificate binds a subject to a public key and is signed by an issuer. Validators mostly care about the extensions: what the key may be used for, which names it covers, whether it is a CA, and where to check revocation.",
+              points: [
+                "Core fields: serial number, issuer, subject, validity (notBefore/notAfter), subject public key, signature algorithm",
+                "Subject Alternative Name (SAN): the DNS names/IPs actually checked by browsers; CN alone is ignored",
+                "Key Usage (digitalSignature, keyEncipherment, keyCertSign) and Extended Key Usage (serverAuth, clientAuth)",
+                "Basic Constraints CA:TRUE plus pathLenConstraint; AKI/SKI link a certificate to its issuer",
+                "CRL Distribution Points and Authority Information Access (OCSP URL, issuer certificate URL)"
+              ],
+              cli: "openssl x509 -in server.crt -noout -text\nopenssl s_client -connect example.com:443 -showcerts"
+            },
+            {
+              t: "CSRs, keys and file formats",
+              body: "You generate a key pair and a Certificate Signing Request (PKCS#10) containing the public key and requested names, signed with the private key to prove you hold it. The CA returns a certificate. The same objects come in different containers, and mixing them up is a common deployment headache.",
+              points: [
+                "PEM: Base64 text with -----BEGIN----- headers; DER: the same data in binary",
+                "PKCS#7 (.p7b): certificates/chain only, no private key",
+                "PKCS#12 (.pfx/.p12): certificate + chain + private key, password-protected",
+                "The private key never leaves the device that created it; protect it with an HSM/TPM where possible"
+              ],
+              cli: "openssl req -new -newkey ec -pkeyopt ec_paramgen_curve:P-256 \\\n  -nodes -keyout wlc.key -out wlc.csr \\\n  -subj \"/CN=wlc.corp.example\" -addext \"subjectAltName=DNS:wlc.corp.example\"\nopenssl pkcs12 -export -in wlc.crt -inkey wlc.key -certfile chain.pem -out wlc.p12"
+            }
+          ]
+        },
+        {
+          title: "CA Hierarchy & Trust",
+          lessons: [
+            {
+              t: "Root, intermediate and issuing CAs",
+              body: "A root CA is self-signed and trusted because it sits in a trust store. It is kept offline and only signs intermediate CAs. Issuing CAs sign end-entity certificates. If an issuing CA is compromised you revoke only that branch; the root, and every device's trust in it, survives.",
+              points: [
+                "Two-tier (offline root + online issuing) suits most enterprises",
+                "Three-tier adds policy CAs for large or regulated environments",
+                "CA keys belong in Hardware Security Modules (FIPS 140-3)",
+                "The Certificate Policy (CP) and Certification Practice Statement (CPS) document the rules"
+              ]
+            },
+            {
+              t: "Chain building and path validation",
+              body: "A relying party builds a path from the leaf certificate through the intermediates to a trusted root. At every step it checks the signature, validity dates, name and usage constraints, Basic Constraints, and revocation status. Servers must send the intermediates themselves. A missing intermediate is the most common cause of 'untrusted certificate' errors.",
+              points: [
+                "Trust stores: OS/browser, Java cacerts, network device trustpoints, ISE Trusted Certificates",
+                "Cross-signing lets a new root chain up to an older, widely trusted one",
+                "Name Constraints limit which domains a subordinate CA may issue for"
+              ],
+              cli: "openssl verify -CAfile root.pem -untrusted intermediate.pem server.crt"
+            }
+          ]
+        },
+        {
+          title: "Lifecycle, Enrollment & Revocation",
+          lessons: [
+            {
+              t: "Enrollment protocols",
+              body: "Manual CSR copy-and-paste does not scale. Automated protocols let devices request and renew their own certificates, which matters more every year as certificate lifetimes shrink.",
+              points: [
+                "SCEP: legacy but ubiquitous on network gear and MDM",
+                "EST (RFC 7030): SCEP's modern, TLS-based successor",
+                "ACME (RFC 8555): automated domain validation, as used by Let's Encrypt",
+                "AD CS auto-enrollment pushes machine and user certificates through Group Policy",
+                "Public TLS certificate lifetimes are shrinking under CA/Browser Forum rules: 200 days from March 2026, falling to 47 days by 2029"
+              ]
+            },
+            {
+              t: "CRL, OCSP and stapling",
+              body: "A CRL is a signed list of revoked serial numbers that clients download periodically. Delta CRLs carry only the changes. OCSP answers 'is this one certificate good?' in real time. With OCSP stapling, the server attaches a recent OCSP response to its handshake, which saves the client the lookup and protects its privacy.",
+              points: [
+                "If the CRL/OCSP responder is unreachable, 'fail open' vs 'fail closed' is a policy choice",
+                "Publish CDP/AIA URLs over HTTP (not HTTPS) to avoid circular dependency",
+                "Monitor expiry: expired certificates are a top cause of outages"
+              ]
+            }
+          ]
+        },
+        {
+          title: "PKI in Network Engineering",
+          lessons: [
+            {
+              t: "TLS 1.3 and mutual TLS",
+              body: "In TLS 1.3 the server sends its certificate chain and a CertificateVerify signature, proving it owns the private key, while ECDHE agrees the session keys. The handshake completes in one round trip. In mutual TLS (mTLS) the server also requests a client certificate, a pattern used in zero trust, service meshes and APIs.",
+              points: [
+                "TLS 1.3 removed RSA key transport and static DH, so forward secrecy is mandatory",
+                "SNI tells the server which certificate to present",
+                "TLS inspection re-signs traffic with an enterprise CA the clients must trust"
+              ]
+            },
+            {
+              t: "Certificates for 802.1X, VPN and devices",
+              body: "EAP-TLS authenticates users and machines to ISE or another RADIUS server using certificates on both sides. It is phishing-resistant and passwordless. IKEv2 site-to-site VPNs scale better with certificate auth than with pre-shared keys. IEEE 802.1AR IDevIDs are factory-installed identities used for secure zero-touch onboarding.",
+              points: [
+                "Clients must trust the RADIUS server's EAP certificate: push the CA and pin the server name",
+                "ISE Certificate Authentication Profiles map certificate attributes to identities",
+                "Network devices use a 'trustpoint' to hold a CA and their own identity"
+              ],
+              cli: "crypto pki trustpoint CORP-CA\n enrollment url http://ca.corp.example:80\n subject-name CN=rtr1.corp.example\n subject-alt-name rtr1.corp.example\n revocation-check crl\n rsakeypair RTR1 2048\ncrypto pki authenticate CORP-CA\ncrypto pki enroll CORP-CA\nshow crypto pki certificates verbose"
+            }
+          ]
+        }
+      ],
+      quiz: [
+        { q: "Which extension lists the DNS names a TLS client actually checks?", o: ["Common Name", "Subject Alternative Name", "Key Usage", "Authority Info Access"], a: 1, why: "Browsers validate SAN; CN matching is deprecated." },
+        { q: "Which file format bundles certificate, chain AND private key?", o: ["PEM certificate", "DER", "PKCS#7", "PKCS#12"], a: 3, why: "PKCS#12 (.pfx/.p12) carries the key, protected by a password." },
+        { q: "Why is a root CA usually kept offline?", o: ["To speed up OCSP", "To protect the key that anchors all trust", "Because roots can't sign CRLs", "Licensing"], a: 1, why: "Compromise of the root breaks the entire hierarchy." },
+        { q: "OCSP stapling means…", o: ["The client caches the CRL", "The server includes a signed OCSP response in the handshake", "The CA emails revocations", "Certificates never expire"], a: 1, why: "The server fetches and attaches the OCSP response." },
+        { q: "Which enrollment protocol does Let's Encrypt use?", o: ["SCEP", "EST", "ACME", "CMP"], a: 2, why: "ACME, RFC 8555." },
+        { q: "The most common cause of 'untrusted certificate' on an otherwise valid server cert?", o: ["Wrong key size", "Missing intermediate certificate", "SAN too long", "Using ECC"], a: 1, why: "Servers must send the intermediate chain." },
+        { q: "What gives TLS forward secrecy?", o: ["RSA key transport", "Ephemeral (EC)DHE key exchange", "SHA-256", "Longer certificates"], a: 1, why: "Ephemeral keys are discarded after each session." }
+      ]
+    },
+    {
+      id: "ise",
+      name: "Cisco ISE Infrastructure",
+      short: "ISE",
+      color: "#38BDF8",
+      layers: "L2–L7",
+      proto: "RADIUS · TrustSec",
+      level: "Advanced",
+      deep: true,
+      hours: 20,
+      topo: "ise",
+      tagline: "Deep dive into Cisco Identity Services Engine: personas and deployment, 802.1X/MAB, policy sets, profiling, guest, BYOD, posture, TrustSec and device admin.",
+      modules: [
+        {
+          title: "ISE Architecture & Deployment",
+          lessons: [
+            {
+              t: "Personas: PAN, MnT, PSN and pxGrid",
+              body: "Cisco ISE is a policy engine that decides who and what gets onto the network. Its functions are split into personas that can share a node or run on dedicated nodes. The Policy Administration Node (PAN) is where you configure everything. Monitoring and Troubleshooting (MnT) nodes collect logs and Live Logs. Policy Service Nodes (PSNs) answer RADIUS and TACACS+ requests and run portals and profiling. pxGrid shares context with other security products.",
+              points: [
+                "Primary and secondary PAN: promotion to primary is manual by default, or automatic with PAN auto-failover",
+                "Primary/secondary MnT: logs are sent to both",
+                "PSNs are active/active; group them in node groups behind a load balancer or in the NAD's server list",
+                "Licensing tiers: Essentials (basic AAA), Advantage (profiling, BYOD, TrustSec, pxGrid), Premier (posture, compliance)"
+              ]
+            },
+            {
+              t: "Deployment models and sizing",
+              body: "A standalone node suits labs. A small deployment runs two nodes with all personas on both. Medium deployments put PAN and MnT on two nodes with dedicated PSNs. Large deployments dedicate every persona and scale out the PSNs. Place PSNs close to their users and keep round-trip latency between nodes within Cisco's limits.",
+              points: [
+                "Size by concurrent active endpoints per PSN (appliance/VM specific)",
+                "Every node must resolve every other node in DNS (forward and reverse) and use NTP",
+                "Replication: the PAN pushes configuration to every node over TLS",
+                "Patch and upgrade PAN first; use split upgrades for zero downtime"
+              ]
+            },
+            {
+              t: "Certificates in ISE",
+              body: "ISE relies heavily on PKI. The Admin certificate secures the GUI and node-to-node communication. The EAP certificate is presented to supplicants during PEAP and EAP-TLS. The Portal certificate secures guest and BYOD pages. The pxGrid certificate authenticates the pxGrid service. The built-in Internal CA issues certificates to BYOD devices and pxGrid clients.",
+              points: [
+                "Use a publicly trusted Portal certificate so guests don't see warnings",
+                "Changing the Admin certificate restarts services on that node, so plan a maintenance window",
+                "Trust the CA chains that issued your clients' certificates under Trusted Certificates"
+              ]
+            }
+          ]
+        },
+        {
+          title: "Network Device Integration",
+          lessons: [
+            {
+              t: "802.1X, MAB and the NAD configuration",
+              body: "The switch or WLC is the Network Access Device (NAD, the authenticator). 802.1X carries EAP from the supplicant to ISE inside RADIUS. MAB (MAC Authentication Bypass) handles devices without supplicants, such as printers, cameras and IoT, using the MAC address as the identity. Authentication order and priority decide what happens when a port supports both.",
+              points: [
+                "RADIUS authentication UDP 1812, accounting UDP 1813",
+                "Change of Authorization (CoA) lets ISE re-authenticate or bounce a session; Cisco ISE listens on UDP 1700 by default (RFC 5176 uses 3799)",
+                "Always send accounting; ISE's session state depends on it",
+                "Add the NAD in ISE with the same shared secret and its device type and location"
+              ],
+              cli: "aaa new-model\nradius server ISE-PSN1\n address ipv4 10.10.10.21 auth-port 1812 acct-port 1813\n key <secret>\naaa group server radius ISE\n server name ISE-PSN1\naaa authentication dot1x default group ISE\naaa authorization network default group ISE\naaa accounting dot1x default start-stop group ISE\naaa server radius dynamic-author\n client 10.10.10.21 server-key <secret>\ndot1x system-auth-control\n!\ninterface Gi1/0/10\n switchport mode access\n authentication port-control auto\n authentication order dot1x mab\n mab\n dot1x pae authenticator"
+            },
+            {
+              t: "Phased rollout: monitor, low-impact, closed",
+              body: "Turning on 802.1X everywhere at once causes outages. Monitor mode (open authentication) authenticates without enforcing, so you can fix failures in Live Logs. Low-impact mode allows limited access (DHCP, DNS, ISE) through a pre-auth port ACL, then applies a dACL after authentication. Closed mode allows nothing until authentication succeeds.",
+              points: [
+                "Track 'unknown' endpoints before enforcing",
+                "IBNS 2.0 (policy-map type control subscriber) replaces legacy 'authentication' commands",
+                "Critical VLAN/ACL keeps users working if every PSN is unreachable"
+              ],
+              cli: "show access-session interface Gi1/0/10 details\ntest aaa group ISE user1 Passw0rd new-code\nshow aaa servers"
+            }
+          ]
+        },
+        {
+          title: "Policy Sets, Identity & Profiling",
+          lessons: [
+            {
+              t: "Policy sets, authentication and authorization",
+              body: "Policy sets are evaluated top-down and are matched on conditions such as device type, location, SSID or protocol. Inside a set, the authentication policy chooses which identity source validates the credentials. The authorization policy then chooses the result: an authorization profile carrying a VLAN, a downloadable ACL, an SGT, a redirect URL or a reauth timer.",
+              points: [
+                "Identity sources: internal users/endpoints, Active Directory join points, LDAP, RADIUS token, SAML IdP, certificate profiles",
+                "Identity source sequences try stores in order",
+                "Allowed Protocols decide which EAP methods (PEAP, EAP-TLS, TEAP, EAP-FAST) are accepted",
+                "Keep rules specific-to-general, and watch hit counters to find unused rules"
+              ]
+            },
+            {
+              t: "Profiling endpoints",
+              body: "The profiler classifies endpoints (Windows PC, iPhone, Cisco IP phone, Axis camera) using data from probes. Profiles feed authorization, so a camera lands in the camera VLAN with a camera dACL without anyone entering its MAC address.",
+              points: [
+                "Probes: RADIUS, DHCP (via helper or Device Sensor), HTTP, SNMP, NMAP, NetFlow, DNS, AD, pxGrid",
+                "Device Sensor on switches/WLCs sends CDP/LLDP/DHCP attributes in RADIUS accounting",
+                "Profile changes can trigger CoA; use certainty factors and logical profiles",
+                "Update the feed service regularly for new device signatures"
+              ]
+            }
+          ]
+        },
+        {
+          title: "Guest, BYOD & Posture",
+          lessons: [
+            {
+              t: "Guest access with Central Web Authentication",
+              body: "An unknown device fails MAB, and ISE returns a redirect: a redirect ACL plus a URL to the guest portal on a PSN. After the user logs in (hotspot, self-registration or sponsored account), ISE sends a CoA and the session re-authenticates with guest access.",
+              points: [
+                "Portal types: Hotspot (AUP only), Self-Registered, Sponsored",
+                "The redirect ACL on the NAD decides what gets redirected (permit = redirect)",
+                "Guest data retention and purge policies matter for privacy"
+              ]
+            },
+            {
+              t: "BYOD onboarding",
+              body: "In the BYOD flow, users register their own device through a portal. ISE pushes a Native Supplicant Provisioning profile and a certificate from its internal CA, and the device reconnects with EAP-TLS to the corporate SSID. Users can manage their devices, or report them lost, in the My Devices portal.",
+              points: [
+                "Single-SSID vs dual-SSID (open onboarding SSID) flows",
+                "Blocklisting a lost device revokes its certificate",
+                "MDM integration can require enrollment before access"
+              ]
+            },
+            {
+              t: "Posture assessment",
+              body: "Posture checks device health before granting full access: anti-malware running and up to date, disk encrypted, patches installed, firewall on. Cisco Secure Client's ISE Posture module reports status as Compliant, Non-compliant or Unknown. Authorization rules match on that status and can remediate automatically.",
+              points: [
+                "Posture requirements = conditions + remediation actions",
+                "Posture lease avoids re-scanning on every connection",
+                "Agentless posture (via script) and temporal agent options exist"
+              ]
+            }
+          ]
+        },
+        {
+          title: "TrustSec, pxGrid & Device Admin",
+          lessons: [
+            {
+              t: "TrustSec segmentation with SGTs",
+              body: "Instead of IP-based ACLs, ISE assigns each session a Security Group Tag (SGT) based on who and what it is. Enforcement switches apply SGACLs from a source × destination matrix, so policy follows the user wherever they connect.",
+              points: [
+                "Propagation: inline tagging (Cisco Metadata in the frame) or SXP (IP-to-SGT over TCP 64999)",
+                "Enforcement happens at egress on SGACL-capable devices",
+                "Also the basis of segmentation in SD-Access and on Secure Firewall"
+              ],
+              cli: "cts role-based enforcement\ncts role-based enforcement vlan-list 10,20\nshow cts role-based permissions\nshow cts role-based sgt-map all"
+            },
+            {
+              t: "pxGrid context sharing",
+              body: "pxGrid is a publish/subscribe bus (pxGrid 2.0 uses WebSocket/REST with certificates). Firewalls, SIEMs and NDR tools subscribe to learn the user, device type, SGT and posture behind each IP. They can also ask ISE to quarantine an endpoint through Adaptive Network Control (ANC).",
+              points: [
+                "Secure Firewall (FMC) uses pxGrid for identity-based rules",
+                "ANC policies (Quarantine, Port Bounce, Shutdown) trigger CoA",
+                "Approve pxGrid clients and trust their certificates"
+              ]
+            },
+            {
+              t: "Device administration with TACACS+",
+              body: "With the Device Admin license, PSNs act as TACACS+ servers (TCP 49) for network engineers' logins. TACACS+ encrypts the whole payload and authorises each command separately. Shell profiles set the privilege level, and command sets allow or deny individual commands, with full accounting of who typed what.",
+              points: [
+                "Enable Device Admin Service on the PSN persona",
+                "Keep a local fallback account in case AAA is unreachable",
+                "Device admin policy sets are separate from network access policy sets"
+              ],
+              cli: "tacacs server ISE-PSN1\n address ipv4 10.10.10.21\n key <secret>\naaa group server tacacs+ ISE-TAC\n server name ISE-PSN1\naaa authentication login VTY group ISE-TAC local\naaa authorization commands 15 VTY group ISE-TAC local\naaa accounting commands 15 VTY start-stop group ISE-TAC"
+            }
+          ]
+        }
+      ],
+      quiz: [
+        { q: "Which ISE persona processes RADIUS requests from switches?", o: ["PAN", "MnT", "PSN", "pxGrid"], a: 2, why: "Policy Service Nodes run the AAA runtime." },
+        { q: "Which ISE persona is used to configure policy?", o: ["PSN", "PAN", "MnT", "IPN"], a: 1, why: "The Policy Administration Node holds the configuration database." },
+        { q: "MAB is used for…", o: ["Admin logins", "Devices without an 802.1X supplicant", "Posture", "Guest sponsors"], a: 1, why: "MAC Authentication Bypass uses the MAC as the identity." },
+        { q: "What lets ISE re-authenticate an existing session after a posture change?", o: ["SXP", "CoA", "SNMP trap", "OCSP"], a: 1, why: "Change of Authorization (RFC 5176)." },
+        { q: "Which rollout mode authenticates but does not enforce?", o: ["Closed mode", "Low-impact mode", "Monitor (open) mode", "Critical mode"], a: 2, why: "Monitor mode lets you fix failures safely." },
+        { q: "SXP carries…", o: ["RADIUS attributes", "IP-to-SGT mappings", "Syslog", "Posture results"], a: 1, why: "SGT Exchange Protocol propagates bindings where inline tagging isn't possible." },
+        { q: "Device administration AAA in ISE uses…", o: ["RADIUS 1812", "TACACS+ TCP 49", "LDAP 389", "Kerberos 88"], a: 1, why: "TACACS+ with per-command authorisation." },
+        { q: "Which ISE certificate do supplicants see during PEAP/EAP-TLS?", o: ["Admin", "Portal", "EAP Authentication", "pxGrid"], a: 2, why: "The EAP certificate is presented inside the TLS tunnel." }
+      ]
+    },
+    {
       id: "datacenter",
       name: "Data Centre",
       short: "Data Centre",
@@ -713,7 +1190,7 @@ window.NETVERSE = {
           lessons: [
             {
               t: "Cisco ACI & intent-based fabrics",
-              body: "In ACI, the APIC controller programs the fabric from policy: tenants, VRFs, bridge domains, EPGs and contracts. Traffic between EPGs is denied unless a contract allows it. Other intent-based fabrics include Arista CloudVision and Juniper Apstra.",
+              body: "In ACI, the APIC controller programs the fabric from policy: tenants, VRFs, bridge domains, EPGs and contracts. Traffic between EPGs is denied unless a contract allows it. The Cisco ACI domain covers this in depth. Other intent-based fabrics include Arista CloudVision and Juniper Apstra.",
               points: [
                 "EPG = group of endpoints with the same policy",
                 "Contracts = provider/consumer rules",
@@ -740,68 +1217,375 @@ window.NETVERSE = {
       ]
     },
     {
-      id: "sdwan",
-      name: "SD-WAN",
-      short: "SD-WAN",
-      color: "#FF9F5A",
-      layers: "L3–L7",
-      proto: "Overlay",
-      level: "Intermediate",
-      hours: 10,
-      topo: "hubspoke",
-      tagline: "Transport-independent WANs with centralised policy, app-aware routing and cloud on-ramps.",
+      id: "aci",
+      name: "Cisco ACI Data Centre",
+      short: "ACI",
+      color: "#14B8A6",
+      layers: "L2–L7",
+      proto: "APIC · iVXLAN",
+      level: "Advanced",
+      deep: true,
+      hours: 22,
+      topo: "aci",
+      tagline: "Deep dive into Application Centric Infrastructure: fabric discovery, the tenant model, access policies, contracts, L3Out, Multi-Pod/Multi-Site and automation.",
       modules: [
         {
-          title: "Architecture",
+          title: "Fabric Architecture",
           lessons: [
             {
-              t: "Planes and components",
-              body: "SD-WAN separates the planes. An orchestrator handles onboarding, a controller distributes routes and policy (in Cisco's design, vSmart over OMP), a manager provides the GUI and API, and edge routers build encrypted overlay tunnels over any transport.",
+              t: "APIC, spines and leaves",
+              body: "ACI is Cisco's SDN fabric built from Nexus 9000 switches running in ACI mode, managed by an APIC cluster. The APIC is the single point of policy and management but sits outside the data path: if every APIC goes down, the fabric keeps forwarding. Endpoints and external devices connect only to leaves. Spines connect only to leaves, plus IPN/ISN links.",
               points: [
-                "Transports: MPLS, broadband, LTE/5G, satellite",
-                "Zero-touch provisioning for new branches",
-                "TLOC = transport locator (system IP + colour + encapsulation)"
+                "APIC cluster: 3 or more controllers for production; the database is sharded across them",
+                "Leaf roles: compute, service, border leaf (L3Out) and remote leaf",
+                "The APIC connects to leaves; the fabric forms automatically from the first leaf",
+                "Policy model: declare intent once and the APIC renders it onto switches"
               ]
             },
             {
-              t: "Overlay tunnels & topologies",
-              body: "Edges build an IPsec full mesh by default. Policy can restrict this to hub-and-spoke or regional meshes. BFD probes run through every tunnel to measure loss, latency and jitter all the time.",
+              t: "Fabric discovery and the infra underlay",
+              body: "At initial setup you define the fabric name, the TEP address pool, the infra VLAN and the multicast GIPo pool. Switches are discovered through LLDP, registered with a node ID and name, and given TEP addresses by DHCP from the APIC. IS-IS is the underlay IGP between TEPs. COOP on the spines holds the endpoint database. MP-BGP with the spines as route reflectors distributes external routes.",
               points: [
-                "Full mesh vs hub-and-spoke vs partial mesh",
-                "Segmentation with VPNs/VRFs end to end",
-                "Direct Internet Access (DIA) at branches"
+                "TEP pool must not overlap anything else; size /16 for large fabrics",
+                "The infra VLAN (e.g. 3967) must be free end to end, including on hypervisor uplinks",
+                "Spine proxy: unknown unicast is sent to the spines, which look it up in COOP",
+                "The data plane is iVXLAN, carrying the source EPG (pcTag) and policy bits in the header"
+              ],
+              cli: "acidiag fnvread\nacidiag avread\nshow isis adjacency detail vrf overlay-1\nshow coop internal info repo ep"
+            }
+          ]
+        },
+        {
+          title: "Logical Model: Tenants to EPGs",
+          lessons: [
+            {
+              t: "Tenant, VRF, bridge domain",
+              body: "A tenant is an administrative and policy container. Common, infra and mgmt are built-in tenants. A VRF is a Layer 3 routing domain. A bridge domain (BD) is a Layer 2 flood domain tied to one VRF, and it holds the gateway subnets, which work as a distributed anycast gateway on every leaf where the BD is deployed.",
+              points: [
+                "BD settings: unicast routing, L2 unknown unicast (proxy/flood), ARP flooding, limit IP learning to subnet",
+                "Subnet scope: private, advertised externally, shared between VRFs",
+                "Objects in tenant common can be used by every tenant"
+              ]
+            },
+            {
+              t: "Application profiles and EPGs",
+              body: "An Endpoint Group (EPG) is a set of endpoints with the same policy, for example web servers. Membership is set by VLAN on a port, by VMM port group, or by attributes (uSeg EPGs). EPGs sit inside application profiles and belong to one BD. By default, no traffic flows between EPGs without a contract: ACI is a whitelist model.",
+              points: [
+                "Traffic within one EPG is allowed by default (unless intra-EPG isolation is on)",
+                "Endpoint Security Groups (ESGs) decouple security from BD/forwarding constructs",
+                "Network-centric migration: one VLAN = one BD = one EPG as a starting point"
+              ]
+            },
+            {
+              t: "The management information tree",
+              body: "Everything in ACI is a managed object (MO) in the Management Information Tree (MIT), addressable by a distinguished name (DN) and typed by class. For example, fvTenant is a tenant, fvBD a bridge domain, fvAEPg an EPG and vzBrCP a contract. The GUI, CLI and REST API all read and write the same objects.",
+              points: [
+                "DN example: uni/tn-PROD/ap-SHOP/epg-WEB",
+                "Visore (object browser) and API Inspector show the exact API calls behind GUI clicks",
+                "Faults, events and audit logs are MOs too"
+              ],
+              cli: "moquery -c fvTenant\nmoquery -c fvCEp -f 'fv.CEp.ip==\"10.1.1.10\"'\nshow endpoint ip 10.1.1.10"
+            }
+          ]
+        },
+        {
+          title: "Access Policies",
+          lessons: [
+            {
+              t: "The access policy chain",
+              body: "Before an EPG can use a port, the port must be allowed to carry that VLAN. The chain: a VLAN pool is referenced by a domain (physical, VMM, L3 or L2 external). The domain is attached to an AAEP (Attachable Access Entity Profile). The AAEP is attached to an interface policy group. The policy group is selected by an interface profile, which is associated with a switch profile.",
+              points: [
+                "Policy group types: access port, port-channel, vPC",
+                "Interface policies: link speed, CDP/LLDP, LACP, MCP, storm control",
+                "Static VLAN pools for bare metal; dynamic pools for VMM",
+                "Most 'EPG not deployed' faults are a broken link in this chain (F0467 invalid VLAN / path)"
+              ]
+            },
+            {
+              t: "Attaching endpoints: static ports and VMM",
+              body: "Static port bindings map an EPG to a leaf port or vPC with an encapsulation VLAN. VMM integration connects the APIC to vCenter (or another platform). The APIC creates a distributed switch, and each EPG becomes a port group, with VLANs taken from the dynamic pool automatically.",
+              points: [
+                "Deployment immediacy: immediate vs on-demand (saves policy TCAM)",
+                "vPC requires a vPC explicit protection group per leaf pair",
+                "Encap VLANs are locally significant to each leaf"
               ]
             }
           ]
         },
         {
-          title: "Policy",
+          title: "Contracts & Service Insertion",
           lessons: [
             {
-              t: "Application-aware routing",
-              body: "DPI identifies thousands of applications. SLA classes define acceptable loss, latency and jitter. When a path breaks its SLA, flows move to a compliant path within seconds, so voice stays on the cleanest link.",
+              t: "Providers, consumers, subjects and filters",
+              body: "A contract is a policy between a provider EPG (for example, a web EPG offering TCP 443) and a consumer EPG. Contracts contain subjects, which contain filters that match L2–L4 fields. The contract's scope (application profile, VRF, tenant or global) decides where it applies. Leaves render contracts into zoning rules in hardware TCAM.",
               points: [
-                "Example SLA for voice: loss < 1%, latency < 150 ms, jitter < 30 ms",
-                "FEC and packet duplication protect real-time traffic",
-                "Cloud OnRamp probes SaaS reachability (M365, Salesforce)"
+                "Apply both directions / reverse filter ports for stateless return traffic",
+                "vzAny represents every EPG in a VRF, which saves TCAM for shared services",
+                "Preferred groups allow free communication inside a group",
+                "Taboo contracts explicitly deny traffic"
+              ],
+              cli: "show zoning-rule scope <vrf-vnid>\nshow system internal policy-mgr stats\ncontract_parser.py"
+            },
+            {
+              t: "Service graphs and PBR",
+              body: "Service graphs insert L4–L7 devices, such as firewalls and load balancers, between consumer and provider. With Policy-Based Redirect (PBR), the leaves redirect matching traffic to the service device, so it doesn't have to be the default gateway. That makes selective firewalling of east-west traffic practical.",
+              points: [
+                "Unmanaged mode: ACI only handles network stitching",
+                "PBR health tracking with IP SLA and resilient hashing",
+                "Symmetric PBR keeps both directions on the same firewall"
+              ]
+            }
+          ]
+        },
+        {
+          title: "External Connectivity & Multi-Fabric",
+          lessons: [
+            {
+              t: "L3Out and external EPGs",
+              body: "An L3Out connects a VRF to outside routers through border leaves using static routes, OSPF, EIGRP or BGP. External routes are distributed inside the fabric with MP-BGP. External EPGs (l3extInstP) classify outside prefixes so that contracts can apply to them. BD subnets are advertised out by marking them 'advertised externally' and associating the L3Out.",
+              points: [
+                "External EPG subnet flags: external subnets for external EPG (classification), export/import route control",
+                "Use SVIs on vPC for redundant router peering",
+                "BFD and floating SVI options for fast convergence and VM routers"
               ]
             },
             {
-              t: "Security & SASE",
-              body: "Branch edges now ship with an embedded firewall, IPS and URL filtering, or they forward Internet traffic to a cloud SSE service. Together, SD-WAN and SSE make up the SASE model.",
+              t: "Multi-Pod, Multi-Site and remote leaf",
+              body: "Multi-Pod extends one fabric (a single APIC cluster, one availability zone) across pods through an IP Inter-Pod Network (IPN) that needs PIM Bidir, OSPF and DHCP relay. Multi-Site interconnects independent fabrics, each with its own APIC cluster, through an Inter-Site Network. Nexus Dashboard Orchestrator defines stretched or local policy across sites. Remote leaf extends ACI to small sites over a WAN.",
               points: [
-                "Local breakout needs local security",
-                "SSE: SWG + CASB + ZTNA + FWaaS",
-                "Single-vendor vs dual-vendor SASE"
+                "Multi-Pod = one change domain; Multi-Site = separate fault and change domains",
+                "The IPN needs an MTU large enough for VXLAN (9150+ is typical)",
+                "Nexus Dashboard also hosts Insights and assurance apps"
+              ]
+            }
+          ]
+        },
+        {
+          title: "Automation & Operations",
+          lessons: [
+            {
+              t: "REST API, Ansible and Terraform",
+              body: "The APIC REST API accepts JSON or XML. You log in via aaaLogin, then POST objects to their DNs. The cisco.aci Ansible collection and the CiscoDevNet/aci Terraform provider wrap the API for infrastructure as code, so tenants become version-controlled files.",
+              points: [
+                "Query with ?query-target=subtree&target-subtree-class=fvAEPg",
+                "Snapshots and config rollback before large changes",
+                "Use the API Inspector to turn GUI actions into code"
+              ],
+              cli: "POST https://apic/api/mo/uni.json\n{\"fvTenant\": {\"attributes\": {\"name\": \"PROD\"},\n  \"children\": [{\"fvCtx\": {\"attributes\": {\"name\": \"VRF1\"}}}]}}"
+            },
+            {
+              t: "Troubleshooting toolkit",
+              body: "Start with faults, which are graded by severity and point at the failing MO. Then check endpoint learning (show endpoint, the Endpoint Tracker), zoning rules for contracts, and ELAM or Visibility & Troubleshooting for packet paths. Atomic counters and SPAN/ERSPAN help with drops.",
+              points: [
+                "Health scores roll up from switches to tenants and applications",
+                "Endpoint flapping often means a duplicate IP or a looped host",
+                "Check policy CAM usage before adding many contracts"
               ]
             }
           ]
         }
       ],
       quiz: [
-        { q: "What continuously measures SD-WAN tunnel quality?", o: ["SNMP", "BFD probes", "Syslog", "ICMP only"], a: 1, why: "BFD runs inside each tunnel for loss, latency and jitter." },
-        { q: "App-aware routing moves traffic when…", o: ["A link goes down only", "A path violates its SLA class", "Every 24 hours", "CPU is high"], a: 1, why: "It reacts to SLA breaches, not just outages." },
-        { q: "SD-WAN + cloud-delivered security is called…", o: ["SASE", "SIEM", "SOAR", "NAC"], a: 0, why: "Secure Access Service Edge." }
+        { q: "If all APICs fail, the ACI fabric…", o: ["Stops forwarding", "Keeps forwarding with the last policy", "Floods everything", "Reboots"], a: 1, why: "APIC is not in the data path." },
+        { q: "Which object holds gateway subnets in ACI?", o: ["VRF", "EPG", "Bridge domain", "AAEP"], a: 2, why: "Subnets are configured on the BD (anycast gateway)." },
+        { q: "By default, traffic between two EPGs is…", o: ["Permitted", "Denied without a contract", "Permitted only in the same BD", "Mirrored"], a: 1, why: "ACI is allow-list by default." },
+        { q: "Correct access policy chain order?", o: ["VLAN pool → domain → AAEP → policy group → interface profile → switch profile", "AAEP → VLAN pool → EPG → BD", "Switch profile → VRF → BD", "Domain → tenant → contract"], a: 0, why: "That chain authorises VLANs on ports." },
+        { q: "Which protocol stores the endpoint database on spines?", o: ["IS-IS", "COOP", "MP-BGP", "LLDP"], a: 1, why: "Council of Oracle Protocol." },
+        { q: "What does vzAny represent?", o: ["All tenants", "All EPGs in a VRF", "All leaves", "Any external route"], a: 1, why: "vzAny = every EPG in the VRF." },
+        { q: "Separate APIC clusters per fabric, orchestrated together, describes…", o: ["Multi-Pod", "Multi-Site", "Remote leaf", "vPC"], a: 1, why: "Multi-Site with Nexus Dashboard Orchestrator." },
+        { q: "Which object classifies outside prefixes for contracts on an L3Out?", o: ["BD subnet", "External EPG (l3extInstP)", "AAEP", "Filter"], a: 1, why: "External EPG subnets classify external traffic." }
+      ]
+    },
+    {
+      id: "sdwan",
+      name: "SD-WAN Concepts",
+      short: "SD-WAN",
+      color: "#FF9F5A",
+      layers: "L3–L7",
+      proto: "OMP · IPsec",
+      level: "Advanced",
+      deep: true,
+      hours: 20,
+      topo: "hubspoke",
+      tagline: "Deep dive into Cisco Catalyst SD-WAN: control plane, OMP, TLOCs, onboarding, policy, app-aware routing, security and multicloud.",
+      modules: [
+        {
+          title: "Why SD-WAN & the Four Planes",
+          lessons: [
+            {
+              t: "From router-by-router WAN to SD-WAN",
+              body: "A traditional WAN is configured box by box, depends on expensive MPLS, and backhauls Internet traffic through the data centre. SD-WAN abstracts every transport into one encrypted overlay. A central controller and policy engine decide per application which path to use, and new sites come up by zero-touch provisioning.",
+              points: [
+                "Transport independence: MPLS, broadband, LTE/5G and satellite all become 'colours' in one fabric",
+                "Central policy replaces thousands of lines of per-device CLI",
+                "Application-aware steering is based on measured loss, latency and jitter",
+                "Direct Internet and SaaS access from the branch, with security built in"
+              ]
+            },
+            {
+              t: "Orchestration, management, control and data planes",
+              body: "Cisco Catalyst SD-WAN (formerly Viptela) splits the solution into four planes. The SD-WAN Validator (vBond) handles orchestration: it authenticates every device and helps with NAT traversal. The SD-WAN Manager (vManage) is the management plane: GUI, templates or configuration groups, monitoring and APIs. The SD-WAN Controller (vSmart) is the control plane: it runs OMP and distributes routes, keys and policy. WAN Edge routers (cEdge on IOS XE, legacy vEdge) form the data plane.",
+              points: [
+                "Validator: first point of contact, needs a public IP or 1:1 NAT, UDP 12346",
+                "Controllers and Manager hold permanent DTLS (default) or TLS sessions to every edge",
+                "Controllers never forward user traffic; they only exchange control information",
+                "All components authenticate with certificates plus an authorised serial-number list"
+              ]
+            },
+            {
+              t: "Bring-up sequence of a WAN Edge",
+              body: "A new edge contacts the Validator over DTLS. The Validator checks the edge's certificate and serial number against the authorised list, then tells it the addresses of the Manager and Controllers. The edge builds control connections to them. The Manager pushes configuration, the Controllers send OMP routes, TLOCs and IPsec keys, and the edge builds BFD-monitored IPsec tunnels to the other edges.",
+              points: [
+                "Validator connections are transient; Manager and Controller sessions are permanent",
+                "Organisation name, Validator address, system IP and site ID must be correct, or authentication fails",
+                "Clock skew breaks certificate validation, so configure NTP early"
+              ],
+              cli: "show sdwan control local-properties\nshow sdwan control connections\nshow sdwan control connection-history"
+            }
+          ]
+        },
+        {
+          title: "Overlay Building Blocks",
+          lessons: [
+            {
+              t: "System IP, site ID and VPN segmentation",
+              body: "Every device has a system IP (a router-ID-like identifier on the system/loopback interface) and a site ID that groups devices at the same location. Segmentation uses VPNs, which are VRFs. VPN 0 is the transport VPN facing the WAN, VPN 512 is out-of-band management, and service VPNs (1–511 and beyond) carry user traffic end to end.",
+              points: [
+                "The system IP does not need to be routable; it is only an identifier",
+                "Site ID drives policy (site lists) and loop prevention",
+                "Service VPN labels travel in OMP so segments stay separate across the fabric"
+              ]
+            },
+            {
+              t: "TLOCs and colours",
+              body: "A TLOC (Transport Locator) identifies a WAN attachment point: system IP + colour + encapsulation (IPsec or GRE). Colours label transports. Private colours (mpls, metro-ethernet, private1–6) build tunnels using private addresses. Public colours (biz-internet, public-internet, lte, 3g, gold, silver…) use the post-NAT public address.",
+              points: [
+                "'restrict' on a colour builds tunnels only to TLOCs with the same colour",
+                "TLOC extension lets two routers at a site share each other's circuits",
+                "Carrier settings control whether private colours try public IPs between different carriers"
+              ]
+            },
+            {
+              t: "OMP: the Overlay Management Protocol",
+              body: "OMP runs over the control connections, between edges and Controllers only, never edge to edge. It carries three route types: OMP routes (service-side prefixes learned from connected, static, OSPF, EIGRP or BGP), TLOC routes (transport locators with their attributes), and service routes (firewalls or IPS inserted in the path). Controllers act like BGP route reflectors and apply control policy before re-advertising.",
+              points: [
+                "Best-path tie-breakers include administrative distance, OMP preference and TLOC preference",
+                "Default: up to 4 equal paths are installed (send-path-limit / ecmp-limit tunable)",
+                "Graceful restart keeps forwarding if control connections drop (12 hours by default)"
+              ],
+              cli: "show sdwan omp peers\nshow sdwan omp routes vpn 10\nshow sdwan omp tlocs"
+            },
+            {
+              t: "Data plane: IPsec without IKE",
+              body: "Edges do not run IKE with each other. Each edge generates its own IPsec keys and sends them to the Controllers, which pass them to the other edges in OMP TLOC updates. This lets full-mesh encryption scale to thousands of sites. BFD runs inside every tunnel to detect failures and measure loss, latency and jitter.",
+              points: [
+                "Keys rekey on a timer (1 day by default) with a grace period",
+                "Pairwise keys give each edge pair its own key",
+                "Anti-replay window matters with QoS reordering"
+              ],
+              cli: "show sdwan bfd sessions\nshow sdwan ipsec outbound-connections\nshow sdwan tunnel statistics"
+            }
+          ]
+        },
+        {
+          title: "Onboarding & Configuration",
+          lessons: [
+            {
+              t: "Zero-touch provisioning (PnP)",
+              body: "A factory-fresh edge gets an address by DHCP on its WAN port and contacts the Cisco Plug and Play Connect cloud. PnP maps its serial number to your organisation and Validator. The device joins the fabric and the Manager pushes the attached configuration. Staff at the branch only cable and power it on.",
+              points: [
+                "The device must be in the Smart Account's PnP portal and synced to the Manager",
+                "Bootstrap files on USB or bootflash handle sites with no DHCP or Internet",
+                "Certificates come from Cisco's CA, an enterprise CA or the Manager's own CA"
+              ]
+            },
+            {
+              t: "Templates and configuration groups",
+              body: "Feature templates build device templates from reusable parts (system, VPN, interface, OMP, BFD). Newer releases replace them with configuration groups and feature profiles. Variables such as hostname, system IP and interface addresses are filled in per device, so one design can serve hundreds of branches.",
+              points: [
+                "CLI add-on templates cover features the GUI doesn't support",
+                "Use variables for everything site-specific",
+                "Changes are pushed as a transaction and roll back if the device loses its control connections"
+              ]
+            }
+          ]
+        },
+        {
+          title: "Policy Framework",
+          lessons: [
+            {
+              t: "Centralised control policy",
+              body: "Control policy runs on the Controller and changes what OMP advertises. You can filter which sites see which TLOCs to build hub-and-spoke or regional topologies, prefer a data centre, or insert a service such as a firewall. It affects routing information, not packets directly.",
+              points: [
+                "Match: site lists, prefix lists, TLOCs, VPNs; action: accept/reject, set preference or TLOC",
+                "Direction 'out' toward sites is the most common",
+                "Hub-and-spoke: advertise only hub TLOCs to spokes"
+              ]
+            },
+            {
+              t: "Centralised data policy & app-aware routing",
+              body: "Data policy is written on the Controller, pushed to edges and enforced per packet or flow. It covers traffic steering, NAT/DIA, FEC, packet duplication and service chaining. App-aware routing (AAR) uses SLA classes. When BFD shows a tunnel breaking the voice SLA, voice flows move to a compliant colour.",
+              points: [
+                "SLA class example: loss 1%, latency 150 ms, jitter 30 ms",
+                "Preferred colours, and a fallback action when no path meets the SLA",
+                "BFD app-route polling interval and multiplier set how fast AAR reacts"
+              ],
+              cli: "show sdwan app-route stats\nshow sdwan policy from-vsmart\nshow sdwan policy app-route-policy-filter"
+            },
+            {
+              t: "Localised policy & QoS",
+              body: "Localised policy is configured on the device: ACLs, QoS maps, route policies for the service-side IGP/BGP, and mirroring. A QoS map defines up to 8 queues, with queue 0 as the low-latency queue. Shaping on Internet transports matches the real circuit speed.",
+              points: [
+                "Centralised = overlay-wide behaviour, localised = per-box behaviour",
+                "Per-tunnel QoS avoids overrunning small spoke circuits",
+                "Test the policy preview before activation"
+              ]
+            }
+          ]
+        },
+        {
+          title: "Security, Cloud & Scale",
+          lessons: [
+            {
+              t: "Embedded security & SIG",
+              body: "WAN Edges can run an enterprise firewall with application awareness, Snort-based IPS, URL filtering, advanced malware protection and DNS security. Or they can send Internet traffic through IPsec/GRE tunnels to a Secure Internet Gateway such as Cisco Umbrella or Zscaler. This is the edge half of SASE.",
+              points: [
+                "Security policies bind to zones built from service VPNs",
+                "UTD container needs enough memory on the platform",
+                "SIG tunnels support active/backup and weighted load-sharing"
+              ]
+            },
+            {
+              t: "Cloud OnRamp for SaaS and multicloud",
+              body: "Cloud OnRamp for SaaS probes applications such as Microsoft 365 from every exit (local DIA or a gateway site) and picks the best exit for each app. Cloud OnRamp for Multicloud automates transit gateways and virtual edges in AWS, Azure and GCP, and interconnects through colocation partners.",
+              points: [
+                "vQoE score blends loss and latency per SaaS application",
+                "Microsoft 365 traffic categories: Optimize / Allow / Default",
+                "Watch cloud egress costs when steering traffic"
+              ]
+            },
+            {
+              t: "Multi-Region Fabric, HA and troubleshooting",
+              body: "Multi-Region Fabric (MRF) splits a global overlay into regions joined by a core of border routers, so regional edges don't mesh globally. For HA, run multiple Controllers and Validators, dual edges per site with VRRP or TLOC extension, and affinity groups to pin edges to specific Controllers.",
+              points: [
+                "Most onboarding failures come from certificates, serial numbers, the organisation name or clock",
+                "Use real-time device views and Simulate Flows in the Manager",
+                "The same ideas appear on other platforms: Fortinet, Palo Alto Prisma SD-WAN, HPE Aruba EdgeConnect, VeloCloud"
+              ],
+              cli: "show sdwan control connections\nshow sdwan bfd sessions\nshow sdwan app-route sla-class\nshow sdwan omp routes detail"
+            }
+          ]
+        }
+      ],
+      quiz: [
+        { q: "Which Cisco SD-WAN component orchestrates authentication and NAT traversal?", o: ["SD-WAN Manager", "SD-WAN Validator (vBond)", "SD-WAN Controller (vSmart)", "WAN Edge"], a: 1, why: "The Validator is the first point of contact and orchestrates the join process." },
+        { q: "OMP sessions run between…", o: ["Every pair of edges", "Edges and Controllers", "Edges and the Validator", "Manager and Validator only"], a: 1, why: "OMP runs only over control connections to the Controllers, which reflect routes." },
+        { q: "A TLOC is made of…", o: ["Site ID + VPN", "System IP + colour + encapsulation", "Public IP + port", "Serial number + certificate"], a: 1, why: "TLOC = system IP, colour and encapsulation." },
+        { q: "How do WAN Edges exchange IPsec keys?", o: ["IKEv2 between every pair", "Pre-shared keys", "Via the Controllers in OMP", "Via the Manager over NETCONF"], a: 2, why: "Controllers distribute each edge's keys, avoiding a full mesh of IKE." },
+        { q: "Which VPN is the transport VPN?", o: ["VPN 0", "VPN 1", "VPN 512", "VPN 65530"], a: 0, why: "VPN 0 faces the WAN; VPN 512 is management." },
+        { q: "Centralised control policy changes…", o: ["Packets on the edge", "OMP route/TLOC advertisements on the Controller", "Interface QoS", "Device certificates"], a: 1, why: "Control policy shapes what the Controller advertises." },
+        { q: "What measures the SLA used by app-aware routing?", o: ["NetFlow", "BFD probes in each tunnel", "SNMP polling", "ICMP from the Manager"], a: 1, why: "BFD in each tunnel reports loss, latency and jitter." },
+        { q: "The 'restrict' keyword on a colour means…", o: ["No DIA allowed", "Tunnels only form to TLOCs of the same colour", "The colour is private", "The TLOC is backup-only"], a: 1, why: "Restrict prevents tunnels to other colours." }
       ]
     },
     {
@@ -1067,9 +1851,11 @@ window.NETVERSE = {
 
   paths: [
     { name: "Network Associate", note: "CCNA-level foundation", steps: ["fundamentals", "switching", "routing", "services", "wireless", "security", "automation"] },
-    { name: "Enterprise & Campus", note: "CCNP ENCOR-style depth", steps: ["switching", "routing", "wireless", "qos", "sdwan", "security"] },
-    { name: "Data Centre & Cloud", note: "Fabrics to hyperscalers", steps: ["routing", "datacenter", "cloud", "automation"] },
+    { name: "Enterprise & Campus", note: "CCNP ENCOR-style depth", steps: ["switching", "routing", "wireless", "mist", "qos", "sdwan", "ise"] },
+    { name: "Data Centre & Cloud", note: "Fabrics to hyperscalers", steps: ["routing", "datacenter", "aci", "cloud", "automation"] },
+    { name: "Identity & Zero Trust", note: "PKI, NAC and segmentation", steps: ["security", "pki", "ise", "sdwan", "cloud"] },
+    { name: "AI-Driven Wireless Campus", note: "Wi-Fi to cloud-managed AIOps", steps: ["wireless", "pki", "ise", "mist"] },
     { name: "Service Provider", note: "Carrier-grade transport", steps: ["routing", "ipv6", "mpls", "qos"] },
-    { name: "Security Engineer", note: "Defence in depth", steps: ["fundamentals", "dns", "security", "sdwan", "cloud"] }
+    { name: "Security Engineer", note: "Defence in depth", steps: ["fundamentals", "dns", "security", "pki", "ise", "sdwan", "cloud"] }
   ]
 };

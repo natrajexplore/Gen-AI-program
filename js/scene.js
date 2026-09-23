@@ -200,9 +200,9 @@
     var baseZ = 15;
     var st = stage(canvas, 45, function (w, h, cam) {
       var aspect = w / h;
-      baseZ = aspect < 1.1 ? 15 + (1.1 - aspect) * 12 : 16;
+      baseZ = aspect < 1.1 ? 16 + (1.1 - aspect) * 12 : 17.5;
       cam.position.z = baseZ;
-      if (w > 900) cam.setViewOffset(w, h, -w * 0.2, 0, w, h);
+      if (w > 900) cam.setViewOffset(w, h, -w * 0.23, 0, w, h);
       else cam.clearViewOffset();
     });
     var scene = st.scene, camera = st.camera;
@@ -373,8 +373,33 @@
   var KIND_COLORS = {
     core: "#F5B83D", router: "#6FA8FF", switch: "#7C8CFF", spine: "#F5B83D", leaf: "#3DDC97",
     server: "#9FB0D6", host: "#9FB0D6", ap: "#4FD1E8", client: "#9FB0D6", dns: "#B889FF",
-    fw: "#FF6B7A", cloud: "#62B6FF", hub: "#FF9F5A", branch: "#FFD166", controller: "#E57BD8"
+    fw: "#FF6B7A", cloud: "#62B6FF", hub: "#FF9F5A", branch: "#FFD166", controller: "#E57BD8",
+    ca: "#F472B6", ocsp: "#FBCFE8", psn: "#38BDF8", pan: "#7DD3FC", idstore: "#A5B4FC",
+    apic: "#14B8A6", epg: "#99F6E4", ai: "#C7D7F5"
   };
+
+  /* Expanding radio-wave rings around access points. */
+  function radioWaves(g, color, ticks, positions) {
+    positions.forEach(function (p, k) {
+      for (var w = 0; w < 3; w++) {
+        var ring = new THREE.Mesh(
+          new THREE.RingGeometry(0.95, 1, 48),
+          new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false })
+        );
+        ring.rotation.x = -Math.PI / 2;
+        ring.position.copy(p);
+        g.add(ring);
+        (function (ring, offset) {
+          ticks.push(function (dt, t) {
+            var f = reduceMotion ? 0.5 : ((t * 0.45 + offset) % 1);
+            var s = 0.3 + f * 2.2;
+            ring.scale.set(s, s, s);
+            ring.material.opacity = 0.55 * (1 - f);
+          });
+        })(ring, w / 3 + k * 0.13);
+      }
+    });
+  }
 
   function V(x, y, z) { return new THREE.Vector3(x, y, z); }
 
@@ -487,18 +512,113 @@
       return { nodes: nodes, edges: edges };
     },
     hubspoke: function () {
-      var nodes = [{ p: V(0, 0.6, 0), kind: "hub", label: "DC Hub" }], edges = [];
-      nodes.push({ p: V(0, 3, 0), kind: "controller", label: "Controller" });
-      edges.push([0, 1, true]);
-      ringPositions(7, 3.8, -0.4).forEach(function (p, i) {
-        nodes.push({ p: p, kind: "branch", label: "Branch " + (i + 1) });
+      // Catalyst SD-WAN: Manager / Validator / Controller above a DC hub and branch edges.
+      var nodes = [{ p: V(0, 0.4, 0), kind: "hub", label: "DC Hub Edge" }], edges = [];
+      nodes.push({ p: V(-2, 3, 0), kind: "controller", label: "Manager" });
+      nodes.push({ p: V(0, 3.3, 0), kind: "controller", label: "Validator" });
+      nodes.push({ p: V(2, 3, 0), kind: "controller", label: "Controller" });
+      edges.push([0, 1, true]); edges.push([0, 2, true]); edges.push([0, 3, true]);
+      ringPositions(7, 3.8, -0.6).forEach(function (p, i) {
+        nodes.push({ p: p, kind: "branch", label: i ? "Branch" : "Branch Edge" });
         var b = nodes.length - 1;
-        edges.push([0, b]); edges.push([1, b, true]);
+        edges.push([0, b]); edges.push([3, b, true]);
       });
-      edges.push([2, 3]); edges.push([4, 5]);
-      nodes.push({ p: V(3.2, 2.4, -1.4), kind: "cloud", label: "SaaS" });
-      edges.push([2, nodes.length - 1, true]); edges.push([4, nodes.length - 1, true]);
+      edges.push([4, 5]); edges.push([6, 7]); edges.push([8, 9]);
+      nodes.push({ p: V(3.4, 1.8, -2.2), kind: "cloud", label: "SaaS / SIG" });
+      edges.push([4, nodes.length - 1, true]); edges.push([6, nodes.length - 1, true]);
       return { nodes: nodes, edges: edges };
+    },
+    pki: function () {
+      var nodes = [{ p: V(0, 3, 0), kind: "ca", label: "Offline Root CA" }], edges = [];
+      row(2, 4, 1.3, 0).forEach(function (p, i) {
+        nodes.push({ p: p, kind: "ca", label: i ? "Issuing CA" : "Intermediate CA" });
+        edges.push([0, nodes.length - 1]);
+      });
+      var leaf = [["server", "TLS Server"], ["client", "User (EAP-TLS)"], ["router", "VPN Router"], ["ap", "WLC / AP"], ["psn", "ISE"], ["switch", "Switch"]];
+      row(6, 1.5, -0.6, 0.4).forEach(function (p, i) {
+        nodes.push({ p: p, kind: leaf[i][0], label: leaf[i][1] });
+        edges.push([1 + (i < 3 ? 0 : 1), nodes.length - 1]);
+      });
+      nodes.push({ p: V(0, -2.2, 1.6), kind: "ocsp", label: "OCSP / CRL" });
+      var o = nodes.length - 1;
+      edges.push([o, 1, true]); edges.push([o, 2, true]); edges.push([o, 3, true]); edges.push([o, 7, true]);
+      return { nodes: nodes, edges: edges };
+    },
+    ise: function () {
+      var nodes = [], edges = [];
+      nodes.push({ p: V(-1.2, 3, 0), kind: "pan", label: "PAN" });
+      nodes.push({ p: V(1.2, 3, 0), kind: "pan", label: "MnT" });
+      edges.push([0, 1]);
+      row(3, 2.2, 1.4, 0).forEach(function (p) {
+        nodes.push({ p: p, kind: "psn", label: "PSN" });
+        edges.push([0, nodes.length - 1, true]); edges.push([1, nodes.length - 1, true]);
+      });
+      nodes.push({ p: V(-4, 2.2, -0.6), kind: "idstore", label: "Active Directory" });
+      edges.push([2, nodes.length - 1, true]);
+      nodes.push({ p: V(4, 2.2, -0.6), kind: "fw", label: "pxGrid Firewall" });
+      edges.push([1, nodes.length - 1, true]);
+      var nads = [["switch", "Switch (NAD)"], ["controller", "WLC"], ["fw", "VPN Headend"]];
+      row(3, 3, -0.4, 0.3).forEach(function (p, i) {
+        nodes.push({ p: p, kind: nads[i][0], label: nads[i][1] });
+        var n = nodes.length - 1;
+        edges.push([2 + i, n]);
+        edges.push([2 + (i + 1) % 3, n, true]);
+      });
+      var ends = ["Employee", "IP Phone", "Camera", "Guest", "BYOD", "Remote user"];
+      row(6, 1.4, -2, 0.8).forEach(function (p, i) {
+        nodes.push({ p: p, kind: "client", label: ends[i] });
+        edges.push([7 + Math.floor(i / 2), nodes.length - 1]);
+      });
+      return { nodes: nodes, edges: edges };
+    },
+    aci: function () {
+      var nodes = [], edges = [];
+      row(3, 1.1, 3.2, -1).forEach(function (p) { nodes.push({ p: p, kind: "apic", label: "APIC" }); });
+      row(2, 3.4, 1.7).forEach(function (p) { nodes.push({ p: p, kind: "spine", label: "Spine" }); });
+      var leafLabels = ["Border Leaf", "Leaf", "Leaf", "Service Leaf"];
+      row(4, 2, 0).forEach(function (p, i) { nodes.push({ p: p, kind: "leaf", label: leafLabels[i] }); });
+      for (var sp = 3; sp < 5; sp++) for (var l = 5; l < 9; l++) edges.push([sp, l]);
+      edges.push([0, 6, true]); edges.push([1, 6, true]); edges.push([2, 7, true]);
+      nodes.push({ p: V(-4.4, 0.8, 0.6), kind: "router", label: "L3Out Router" });
+      edges.push([5, nodes.length - 1]);
+      nodes.push({ p: V(4.4, 0.8, 0.6), kind: "fw", label: "Firewall (PBR)" });
+      edges.push([8, nodes.length - 1]);
+      var epgs = ["EPG Web", "EPG App", "EPG DB"];
+      [6, 7].forEach(function (leaf, k) {
+        for (var e = 0; e < 3; e++) {
+          var base = nodes[leaf].p;
+          nodes.push({ p: V(base.x - 0.8 + e * 0.8 + k * 0.4, -1.3 - (e % 2) * 0.8, 0.6 + k * 0.6), kind: "epg", label: epgs[e] });
+          edges.push([leaf, nodes.length - 1]);
+        }
+      });
+      return { nodes: nodes, edges: edges };
+    },
+    mist: function () {
+      var nodes = [], edges = [];
+      nodes.push({ p: V(0, 3.2, 0), kind: "ai", label: "Mist AI Cloud" });
+      nodes.push({ p: V(-2.4, 3, -0.4), kind: "ai", label: "Marvis" });
+      nodes.push({ p: V(2.4, 3, -0.4), kind: "psn", label: "Access Assurance" });
+      edges.push([0, 1]); edges.push([0, 2]);
+      nodes.push({ p: V(-3.4, 1.2, 0), kind: "router", label: "SSR WAN Edge" });
+      nodes.push({ p: V(0, 1.2, 0), kind: "switch", label: "EX Switch" });
+      edges.push([0, 3, true]); edges.push([0, 4, true]); edges.push([3, 4]);
+      var aps = row(3, 2.8, -0.2, 0.3);
+      aps[0].x += 1.2;
+      aps.forEach(function (p) {
+        nodes.push({ p: p, kind: "ap", label: "Mist AP" });
+        var a = nodes.length - 1;
+        edges.push([4, a]); edges.push([0, a, true]);
+      });
+      for (var i = 0; i < 8; i++) {
+        var ap = 5 + (i % 3), base = aps[i % 3];
+        var ang = (i / 8) * Math.PI * 2, r = 1 + (i % 2) * 0.6;
+        nodes.push({ p: V(base.x + Math.cos(ang) * r, -1.6, base.z + Math.sin(ang) * r), kind: "client", label: i ? "Client" : "Client / BLE" });
+        edges.push([ap, nodes.length - 1, true]);
+      }
+      return {
+        nodes: nodes, edges: edges,
+        extras: function (g, color, ticks) { radioWaves(g, color, ticks, aps); }
+      };
     },
     wireless: function () {
       var nodes = [], edges = [];
@@ -515,27 +635,7 @@
       }
       return {
         nodes: nodes, edges: edges,
-        extras: function (g, color, ticks) {
-          aps.forEach(function (p, k) {
-            for (var w = 0; w < 3; w++) {
-              var ring = new THREE.Mesh(
-                new THREE.RingGeometry(0.95, 1, 48),
-                new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0.5, side: THREE.DoubleSide, depthWrite: false })
-              );
-              ring.rotation.x = -Math.PI / 2;
-              ring.position.copy(p);
-              g.add(ring);
-              (function (ring, offset) {
-                ticks.push(function (dt, t) {
-                  var f = reduceMotion ? 0.5 : ((t * 0.45 + offset) % 1);
-                  var s = 0.3 + f * 2.2;
-                  ring.scale.set(s, s, s);
-                  ring.material.opacity = 0.55 * (1 - f);
-                });
-              })(ring, w / 3 + k * 0.13);
-            }
-          });
-        }
+        extras: function (g, color, ticks) { radioWaves(g, color, ticks, aps); }
       };
     },
     cloud: function () {
@@ -585,7 +685,7 @@
     pivot.rotation.x = 0.12;
     scene.add(pivot);
 
-    var grid = new THREE.GridHelper(14, 28, new THREE.Color(domain.color), 0x243152);
+    var grid = new THREE.GridHelper(14, 28, 0x2c3a60, 0x243152);
     grid.position.y = -2.2;
     grid.material.transparent = true;
     grid.material.opacity = 0.25;
