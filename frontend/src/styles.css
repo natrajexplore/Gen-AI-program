@@ -382,3 +382,4 @@ h1, h2, h3 { font-family: var(--display); font-weight: 600; letter-spacing: 0.01
 .tutor-form textarea:focus { border-color: var(--amber); outline: none; }
 @media (max-width: 600px) { .tutor { top: 64px; right: 8px; bottom: 8px; width: calc(100vw - 16px); } }
 .tmsg b { color: var(--text); font-weight: 600; }
+.studio-login { max-width: 420px; }

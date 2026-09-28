@@ -4,7 +4,7 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 
-from app import main, store, tutor
+from app import auth, main, store, tutor
 from app.main import BASE
 
 
@@ -40,6 +40,7 @@ def _events(body: str):
 def client(tmp_path, monkeypatch):
     monkeypatch.setattr(store, "DB_PATH", tmp_path / "test.db")
     monkeypatch.setenv("OPENAI_API_KEY", "test-key")
+    monkeypatch.setattr(main.app.state, "tutor_limiter", auth.RateLimiter(100, 600))
     return TestClient(main.app)
 
 

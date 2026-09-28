@@ -14,8 +14,62 @@ const STATUS_COLOR: Record<string, string> = {
   running: "var(--amber)", ready: "#6FA8FF", published: "var(--green)", failed: "var(--red)", rejected: "var(--faint)"
 };
 
-/* AI content studio: ask the agent crew for a draft, review it, then publish or reject it. */
+/* Admin gate: the studio needs a login (ADMIN_PASSWORD on the server). */
 export function Studio({ catalog, onPublished }: { catalog: Catalog; onPublished: () => void }) {
+  const [auth, setAuth] = useState<{ admin: boolean; enabled: boolean } | null>(null);
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    document.title = "Content studio · NetVerse Academy";
+    api<{ admin: boolean; enabled: boolean }>("/api/auth/me").then(setAuth).catch((e) => setError(e.message));
+  }, []);
+
+  async function login(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    try {
+      await api("/api/auth/login", { method: "POST", body: JSON.stringify({ password }) });
+      setPassword("");
+      setAuth({ admin: true, enabled: true });
+    } catch (err) {
+      setError((err as Error).message);
+    }
+  }
+
+  const sessionEnded = useCallback(() => setAuth({ admin: false, enabled: true }), []);
+
+  async function logout() {
+    await api("/api/auth/logout", { method: "POST" }).catch(() => null);
+    setAuth({ admin: false, enabled: true });
+  }
+
+  if (auth?.admin) return <Workspace catalog={catalog} onPublished={onPublished} onLogout={logout} onSessionEnded={sessionEnded} />;
+  return (
+    <div className="section studio">
+      <div className="section-head"><h2>Content studio</h2></div>
+      <div className="panel studio-login">
+        {!auth ? <p className="why">{error ?? "Checking your session…"}</p> : !auth.enabled ? (
+          <p className="why">The content studio is turned off on this server. Set <code>ADMIN_PASSWORD</code> in <code>.env</code> and restart the API to use it.</p>
+        ) : (
+          <form className="studio-form" onSubmit={login}>
+            <h3>Admin login</h3>
+            <label>Password
+              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required autoFocus />
+            </label>
+            <button type="submit" className="btn">Log in</button>
+            <p className="lab-error" hidden={!error}>{error}</p>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+}
+
+/* AI content studio: ask the agent crew for a draft, review it, then publish or reject it. */
+function Workspace({ catalog, onPublished, onLogout, onSessionEnded }: {
+  catalog: Catalog; onPublished: () => void; onLogout: () => void; onSessionEnded: () => void;
+}) {
   const [drafts, setDrafts] = useState<DraftSummary[]>([]);
   const [selected, setSelected] = useState<Draft | null>(null);
   const [mode, setMode] = useState<"extend" | "new">("extend");
@@ -33,7 +87,10 @@ export function Studio({ catalog, onPublished }: { catalog: Catalog; onPublished
 
   const open = useCallback(async (id: number) => setSelected(await api<Draft>("/api/drafts/" + id)), []);
 
-  useEffect(() => { document.title = "Content studio · NetVerse Academy"; refresh().catch((e) => setError(e.message)); }, [refresh]);
+  // An expired session sends the admin back to the login form.
+  useEffect(() => {
+    refresh().catch((e) => (e.message.startsWith("Log in") ? onSessionEnded() : setError(e.message)));
+  }, [refresh, onSessionEnded]);
 
   // While a draft is generating, poll every 2 s and keep the open draft's log live.
   const running = drafts.some((d) => d.status === "running");
@@ -86,6 +143,7 @@ export function Studio({ catalog, onPublished }: { catalog: Catalog; onPublished
           <h2>Content studio</h2>
           <p className="section-note">An AI agent crew researches, writes, diagrams, builds the 3D topology, sets a quiz and reviews its own work. Nothing reaches learners until you publish it.</p>
         </div>
+        <button type="button" className="btn btn-ghost" onClick={onLogout}>Log out</button>
       </div>
 
       <div className="studio-grid">

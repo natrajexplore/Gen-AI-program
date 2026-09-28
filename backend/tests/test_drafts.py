@@ -2,7 +2,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from app import main, store
+from app import auth, main, store
 
 LESSON = {"t": "ESI basics", "body": "x" * 200, "points": ["a", "b", "c"], "diagram": "flowchart LR\n  A --> B"}
 PACKAGE = {
@@ -30,7 +30,11 @@ def client(tmp_path, monkeypatch):
         store.finish(draft_id, result=PACKAGE if domain else NEW_PACKAGE)
 
     monkeypatch.setattr(main, "_run_job", fake_job)
-    return TestClient(main.app)
+    monkeypatch.setenv("ADMIN_PASSWORD", "test-admin")
+    monkeypatch.setattr(auth, "login_limiter", auth.RateLimiter(5, 900))
+    client = TestClient(main.app)
+    assert client.post("/api/auth/login", json={"password": "test-admin"}).status_code == 200
+    return client
 
 
 def test_missing_key_is_reported(client, monkeypatch):

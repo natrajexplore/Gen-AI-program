@@ -40,7 +40,7 @@ An all-in-one, 3D learning platform for networking. Every domain sits as a node 
 
 ## Run it
 
-The app has a FastAPI backend (serves the course catalogue) and a React + Vite frontend. Run both:
+The app has a FastAPI backend (serves the course catalogue) and a React + Vite frontend. Copy `.env.example` to `.env` and fill in what you need (the site itself runs without any keys). Then run both:
 
 ```bash
 # terminal 1: API on http://127.0.0.1:8005
@@ -71,15 +71,17 @@ Open http://localhost:5005/#studio (also linked in the footer). Pick **Extend a 
 
 Every agent returns Pydantic-validated JSON; invalid output is sent back to the agent once with the validation error. Drafts are stored in SQLite (`backend/data/netverse.db`) and nothing reaches learners until you press **Publish**. Published drafts are layered on top of `netverse.json` when the catalogue is served, so the hand-written file is never modified.
 
-Setup: put your key in `.env` at the project root and restart the API:
+Setup: put your key and an admin password in `.env` at the project root and restart the API. The studio asks for that password; without one it stays disabled.
 
 ```
 OPENAI_API_KEY=sk-...
+ADMIN_PASSWORD=choose-a-long-password
+SESSION_SECRET=<python -c "import secrets; print(secrets.token_hex(32))">
 # optional, defaults to gpt-4o-mini
 NETVERSE_MODEL=gpt-4o-mini
 ```
 
-A generation costs a few cents with `gpt-4o-mini`. That model is fast and cheap but can still get vendor CLI and protocol details wrong, and the reviewer is an AI too: read each draft and its open review issues before publishing. The studio has no login, so run it on localhost only until authentication is added.
+A generation costs a few cents with `gpt-4o-mini`. That model is fast and cheap but can still get vendor CLI and protocol details wrong, and the reviewer is an AI too: read each draft and its open review issues before publishing.
 
 ## AI tutor
 
@@ -91,11 +93,37 @@ The **Ask the tutor** button (bottom right, every page) opens a chat that answer
 
 It uses the same `OPENAI_API_KEY` and `NETVERSE_MODEL` as the content studio (one short, streamed request per question; no CrewAI). Conversations live only in the open page and aren't stored.
 
+## Deploy
+
+In production FastAPI serves both the API and the built site on one port.
+
+**Docker** (builds the frontend, then the Python runtime; runs as a non-root user):
+
+```bash
+docker build -t netverse .
+docker run -d -p 8000:8000 --env-file .env -v netverse-data:/app/backend/data --name netverse netverse
+# open http://localhost:8000
+```
+
+**Without Docker:** `cd frontend && npm run build`, then `cd backend && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000`.
+
+Before exposing it to the internet:
+
+- Serve it over HTTPS (for example behind Caddy, nginx or a cloud load balancer) and set `COOKIE_SECURE=true`.
+- Set `ADMIN_PASSWORD` and a long random `SESSION_SECRET` (otherwise admin sessions end on every restart).
+- Behind a reverse proxy, set `FORWARDED_ALLOW_IPS` to the proxy's address so rate limits see real client IPs.
+- The tutor is public: each client IP gets `TUTOR_RATE_LIMIT` questions per `TUTOR_RATE_WINDOW` seconds (default 20 per 10 minutes). Also set a monthly spending limit on your OpenAI account.
+- Failed studio logins are limited to 5 per 15 minutes per IP. Rate limits are kept in memory, so run a single server process.
+- Keep the `/app/backend/data` volume: it holds the drafts database, including published AI content.
+
+**CI:** `.github/workflows/ci.yml` runs the backend tests, the frontend lint, build and `npm audit`, and a Docker build on every push to `main` and every pull request.
+
 ## Project layout
 
 ```
 backend/
-  app/main.py              FastAPI app: catalogue + draft endpoints (/api/drafts...)
+  app/main.py              FastAPI app: catalogue, drafts, tutor, login; serves the built site
+  app/auth.py              admin session cookie and per-IP rate limits
   app/models.py            Pydantic schema for the catalogue and 3D topologies (validated at startup)
   app/store.py             SQLite storage for AI drafts
   app/tutor.py             tutor: BM25 lesson search, grounded prompt, streamed answers (/api/tutor)

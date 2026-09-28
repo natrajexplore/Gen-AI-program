@@ -6,11 +6,12 @@ from pathlib import Path
 from typing import Literal
 
 from dotenv import load_dotenv
-from fastapi import BackgroundTasks, FastAPI, HTTPException
+from fastapi import BackgroundTasks, Depends, FastAPI, HTTPException, Request, Response
 from fastapi.responses import StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, ValidationError
 
-from . import store, tutor
+from . import auth, store, tutor
 from .models import Catalog, Domain
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
@@ -48,6 +49,8 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(title="NetVerse Academy API", lifespan=lifespan)
+app.state.tutor_limiter = auth.tutor_limiter()
+admin_only = [Depends(auth.require_admin)]
 
 
 @app.get("/api/health")
@@ -68,7 +71,43 @@ def get_domain(domain_id: str) -> Domain:
     raise HTTPException(404, f"Unknown domain: {domain_id}")
 
 
-# ------------------------------------------------------------------ AI content studio
+# ------------------------------------------------------------------ admin login
+
+class LoginRequest(BaseModel):
+    password: str = Field(max_length=200)
+
+
+@app.post("/api/auth/login")
+def login(req: LoginRequest, request: Request, response: Response) -> dict:
+    if not os.environ.get("ADMIN_PASSWORD"):
+        raise HTTPException(503, "The content studio is disabled: set ADMIN_PASSWORD in .env and restart the API.")
+    ip = auth.client_ip(request)
+    # Check the block before the password, so a blocked client can't keep guessing; count only failures.
+    allowed, retry = auth.login_limiter.allow(ip, record=False)
+    if not allowed:
+        raise HTTPException(429, f"Too many failed logins. Try again in {retry // 60 + 1} minutes.",
+                            headers={"Retry-After": str(retry)})
+    if not auth.password_ok(req.password):
+        auth.login_limiter.allow(ip)
+        raise HTTPException(401, "Wrong password.")
+    response.set_cookie(auth.COOKIE, auth.make_token(), max_age=auth.SESSION_TTL, httponly=True,
+                        samesite="strict", secure=auth.cookie_secure(), path="/api")
+    return {"admin": True}
+
+
+@app.post("/api/auth/logout")
+def logout(response: Response) -> dict:
+    response.delete_cookie(auth.COOKIE, path="/api")
+    return {"admin": False}
+
+
+@app.get("/api/auth/me")
+def me(request: Request) -> dict:
+    return {"admin": auth.valid_token(request.cookies.get(auth.COOKIE)),
+            "enabled": bool(os.environ.get("ADMIN_PASSWORD"))}
+
+
+# ------------------------------------------------------------------ AI content studio (admin only)
 
 class GenerateRequest(BaseModel):
     mode: Literal["extend", "new"]
@@ -87,7 +126,7 @@ def _run_job(draft_id: int, domain: Domain | None, topic: str, focus: str) -> No
         store.finish(draft_id, error=f"{type(e).__name__}: {e}"[:2000])
 
 
-@app.post("/api/drafts", status_code=202)
+@app.post("/api/drafts", status_code=202, dependencies=admin_only)
 def create_draft(req: GenerateRequest, tasks: BackgroundTasks) -> dict:
     if not os.environ.get("OPENAI_API_KEY"):
         raise HTTPException(503, "OPENAI_API_KEY is not set. Add it to the .env file in the project root and restart the API.")
@@ -105,7 +144,7 @@ def create_draft(req: GenerateRequest, tasks: BackgroundTasks) -> dict:
     return draft
 
 
-@app.get("/api/drafts")
+@app.get("/api/drafts", dependencies=admin_only)
 def list_drafts() -> list[dict]:
     return [{k: v for k, v in d.items() if k != "result"} for d in store.list_all()]
 
@@ -117,12 +156,12 @@ def _draft_or_404(draft_id: int) -> dict:
     return draft
 
 
-@app.get("/api/drafts/{draft_id}")
+@app.get("/api/drafts/{draft_id}", dependencies=admin_only)
 def get_draft(draft_id: int) -> dict:
     return _draft_or_404(draft_id)
 
 
-@app.post("/api/drafts/{draft_id}/publish")
+@app.post("/api/drafts/{draft_id}/publish", dependencies=admin_only)
 def publish_draft(draft_id: int) -> dict:
     draft = _draft_or_404(draft_id)
     if draft["status"] != "ready":
@@ -135,7 +174,7 @@ def publish_draft(draft_id: int) -> dict:
     return store.get(draft_id)
 
 
-@app.post("/api/drafts/{draft_id}/reject")
+@app.post("/api/drafts/{draft_id}/reject", dependencies=admin_only)
 def reject_draft(draft_id: int) -> dict:
     draft = _draft_or_404(draft_id)
     if draft["status"] != "ready":
@@ -161,9 +200,13 @@ def _sse(event: str, data) -> str:
 
 
 @app.post("/api/tutor")
-def ask_tutor(req: TutorRequest) -> StreamingResponse:
+def ask_tutor(req: TutorRequest, request: Request) -> StreamingResponse:
     if not os.environ.get("OPENAI_API_KEY"):
         raise HTTPException(503, "OPENAI_API_KEY is not set. Add it to the .env file in the project root and restart the API.")
+    allowed, retry = request.app.state.tutor_limiter.allow(auth.client_ip(request))
+    if not allowed:
+        raise HTTPException(429, f"You've asked a lot of questions. Try again in {retry // 60 + 1} minutes.",
+                            headers={"Retry-After": str(retry)})
     if req.messages[-1].role != "user":
         raise HTTPException(422, "The last message must be from the user.")
     catalog = build_catalog()
@@ -186,3 +229,10 @@ def ask_tutor(req: TutorRequest) -> StreamingResponse:
         yield _sse("done", None)
 
     return StreamingResponse(events(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"})
+
+
+# ------------------------------------------------------------------ built frontend
+# In production FastAPI also serves the built site (npm run build). Registered last so /api routes win.
+STATIC_DIR = Path(os.environ.get("STATIC_DIR", Path(__file__).resolve().parents[2] / "frontend" / "dist"))
+if (STATIC_DIR / "index.html").is_file():
+    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="site")
