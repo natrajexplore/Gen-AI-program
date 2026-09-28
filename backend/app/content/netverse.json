@@ -6775,6 +6775,7 @@
         "dns",
         "security",
         "pki",
+        "pqc",
         "ise",
         "sdwan",
         "cloud"

@@ -110,6 +110,10 @@ frontend/
   src/styles.css           styles
 ```
 
+## License
+
+MIT, see [`LICENSE`](LICENSE). Third-party packages keep their own licenses: see [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md). Each `npm run build` writes the full license texts of all bundled packages to `frontend/dist/third-party-licenses.md`, so deploy that file with the site.
+
 ## Adding content
 
 Everything you learn from lives in `backend/app/content/netverse.json`. To add a lesson, append `{ "t", "body", "points", "cli"?, "diagram"? }` to a module's `lessons` array (`diagram` is Mermaid source). To add a domain, add an object to `domains` with a unique `id`, a `color` and a `topology`. Set `"deep": true` to mark a domain as a deep dive.
