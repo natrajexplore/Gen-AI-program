@@ -80,6 +80,16 @@ NETVERSE_MODEL=gpt-4o-mini
 
 A generation costs a few cents with `gpt-4o-mini`. That model is fast and cheap but can still get vendor CLI and protocol details wrong, and the reviewer is an AI too: read each draft and its open review issues before publishing. The studio has no login, so run it on localhost only until authentication is added.
 
+## AI tutor
+
+The **Ask the tutor** button (bottom right, every page) opens a chat that answers networking questions from the course itself:
+
+- Each question is matched against every lesson (including published drafts) with a small built-in BM25 search, boosted for the domain you're viewing. The top five lessons are sent to the model as numbered excerpts.
+- Answers stream in, cite those excerpts as [1], [2]…, and each citation links straight to the lesson. Anything the course doesn't cover is labelled "(not covered in the course)".
+- **Explain this node:** click any device in a domain's 3D topology and the tutor explains its role, using the devices it connects to in that scene as context.
+
+It uses the same `OPENAI_API_KEY` and `NETVERSE_MODEL` as the content studio (one short, streamed request per question; no CrewAI). Conversations live only in the open page and aren't stored.
+
 ## Project layout
 
 ```
@@ -87,12 +97,13 @@ backend/
   app/main.py              FastAPI app: catalogue + draft endpoints (/api/drafts...)
   app/models.py            Pydantic schema for the catalogue and 3D topologies (validated at startup)
   app/store.py             SQLite storage for AI drafts
+  app/tutor.py             tutor: BM25 lesson search, grounded prompt, streamed answers (/api/tutor)
   app/crew/                CrewAI agents, output schemas and the generation pipeline
   app/content/netverse.json  course content: domains, modules, lessons, quizzes, paths
   tests/                   API tests
 frontend/
   src/App.tsx              hash routing, top bar, catalogue loading
-  src/components/          Home, Search, SubnetLab, DomainView, Quiz, Studio, Mermaid, TopologyCanvas
+  src/components/          Home, Search, SubnetLab, DomainView, Quiz, Studio, Tutor, Mermaid, TopologyCanvas
   src/three/scenes.ts      Three.js scenes (hero map + per-domain topologies)
   src/lib/                 progress (localStorage), catalogue helpers, subnet maths
   src/styles.css           styles

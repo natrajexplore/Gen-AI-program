@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -6,9 +7,10 @@ from typing import Literal
 
 from dotenv import load_dotenv
 from fastapi import BackgroundTasks, FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field, ValidationError
 
-from . import store
+from . import store, tutor
 from .models import Catalog, Domain
 
 load_dotenv(Path(__file__).resolve().parents[2] / ".env")
@@ -140,3 +142,47 @@ def reject_draft(draft_id: int) -> dict:
         raise HTTPException(409, f"Only ready drafts can be rejected (this one is {draft['status']}).")
     store.set_status(draft_id, "rejected")
     return store.get(draft_id)
+
+
+# ------------------------------------------------------------------ AI tutor
+
+class ChatMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=4000)
+
+
+class TutorRequest(BaseModel):
+    messages: list[ChatMessage] = Field(min_length=1, max_length=40)
+    domain_id: str | None = None
+
+
+def _sse(event: str, data) -> str:
+    return f"event: {event}\ndata: {json.dumps(data)}\n\n"
+
+
+@app.post("/api/tutor")
+def ask_tutor(req: TutorRequest) -> StreamingResponse:
+    if not os.environ.get("OPENAI_API_KEY"):
+        raise HTTPException(503, "OPENAI_API_KEY is not set. Add it to the .env file in the project root and restart the API.")
+    if req.messages[-1].role != "user":
+        raise HTTPException(422, "The last message must be from the user.")
+    catalog = build_catalog()
+    domain = next((d for d in catalog.domains if d.id == req.domain_id), None)
+    # Retrieve with the last two user turns so short follow-ups ("why?") keep their topic.
+    query = " ".join(m.content for m in [m for m in req.messages if m.role == "user"][-2:])
+    sources = tutor.LessonIndex(catalog).search(query, domain.id if domain else None)
+    history = [m.model_dump() for m in req.messages[-10:]]
+    messages = tutor.build_messages(history, sources, domain.name if domain else None)
+
+    def events():
+        yield _sse("sources", [{"n": i, "key": s["key"], "domain_id": s["domain_id"], "domain": s["domain"],
+                                "module": s["module"], "title": s["title"]} for i, s in enumerate(sources, 1)])
+        try:
+            for delta in tutor.stream_answer(messages):
+                yield _sse("delta", delta)
+        except Exception as e:
+            log.exception("Tutor answer failed")
+            yield _sse("error", f"The tutor couldn't answer ({type(e).__name__}). Try again in a moment.")
+        yield _sse("done", None)
+
+    return StreamingResponse(events(), media_type="text/event-stream", headers={"Cache-Control": "no-cache"})

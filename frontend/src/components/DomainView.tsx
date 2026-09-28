@@ -1,7 +1,7 @@
 import { useEffect, useRef, type CSSProperties } from "react";
 import { domainStats, lessonKey, lessonsOf } from "../lib/catalog";
 import { useProgress } from "../lib/progress";
-import type { Domain } from "../types";
+import type { Domain, TopoNode } from "../types";
 import { LessonContent } from "./LessonContent";
 import { Quiz } from "./Quiz";
 import { Stats } from "./Stats";
@@ -12,9 +12,10 @@ interface Props {
   openLesson: string | null;
   onLessonOpened: () => void;
   onHome: (e: React.MouseEvent) => void;
+  onAskAboutNode: (node: TopoNode) => void;
 }
 
-export function DomainView({ d, openLesson, onLessonOpened, onHome }: Props) {
+export function DomainView({ d, openLesson, onLessonOpened, onHome, onAskAboutNode }: Props) {
   const { progress, toggleLesson } = useProgress();
   useEffect(() => { document.title = d.name + " · NetVerse Academy"; }, [d]);
 
@@ -48,7 +49,7 @@ export function DomainView({ d, openLesson, onLessonOpened, onHome }: Props) {
               ["study time", "~" + d.hours + " h"]
             ]} />
           </div>
-          <TopologyCanvas topology={d.topology} color={d.color} />
+          <TopologyCanvas topology={d.topology} color={d.color} onNodeClick={onAskAboutNode} />
         </div>
       </section>
       <section className="section domain-body">

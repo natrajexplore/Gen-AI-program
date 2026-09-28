@@ -2,9 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { DomainView } from "./components/DomainView";
 import { Home } from "./components/Home";
 import { Studio } from "./components/Studio";
+import { Tutor } from "./components/Tutor";
 import { domainStats, lessonsOf } from "./lib/catalog";
 import { useProgress } from "./lib/progress";
-import type { Catalog } from "./types";
+import type { Catalog, TopoNode } from "./types";
 
 export default function App() {
   const [catalog, setCatalog] = useState<Catalog | null>(null);
@@ -29,6 +30,8 @@ function Shell({ catalog, reload }: { catalog: Catalog; reload: () => void }) {
   const { progress } = useProgress();
   const [hash, setHash] = useState(location.hash);
   const [pendingLesson, setPendingLesson] = useState<string | null>(null);
+  const [tutorOpen, setTutorOpen] = useState(false);
+  const [tutorQuestion, setTutorQuestion] = useState<string | null>(null);
 
   const id = hash.replace(/^#/, "");
   const domain = catalog.domains.find((d) => d.id === id) ?? null;
@@ -63,6 +66,18 @@ function Shell({ catalog, reload }: { catalog: Catalog; reload: () => void }) {
   }
   const clearPending = useCallback(() => setPendingLesson(null), []);
 
+  // "Explain this node": ask about a clicked 3D device, with its direct connections as context.
+  function askAboutNode(node: TopoNode) {
+    if (!domain) return;
+    const byId = new Map(domain.topology.nodes.map((n) => [n.id, n.label]));
+    const peers = [...new Set(domain.topology.links
+      .flatMap((l) => (l.from === node.id ? [l.to] : l.to === node.id ? [l.from] : []))
+      .map((id) => byId.get(id)))].join(", ");
+    setTutorQuestion(`In the ${domain.name} topology, what does the "${node.label}" (${node.kind}) do?`
+      + (peers ? ` In the diagram it connects to: ${peers}.` : "") + " Explain its role and how it interacts with those devices.");
+    setTutorOpen(true);
+  }
+
   const totalLessons = catalog.domains.reduce((n, d) => n + lessonsOf(d).length, 0);
   const doneLessons = catalog.domains.reduce((n, d) => n + domainStats(d, progress).done, 0);
 
@@ -87,8 +102,11 @@ function Shell({ catalog, reload }: { catalog: Catalog; reload: () => void }) {
       <main id="main">
         <Home catalog={catalog} active={!domain && !studio} onOpen={open} />
         {studio && <Studio catalog={catalog} onPublished={reload} />}
-        {domain && <DomainView d={domain} openLesson={pendingLesson} onLessonOpened={clearPending} onHome={goHome(null)} />}
+        {domain && <DomainView d={domain} openLesson={pendingLesson} onLessonOpened={clearPending} onHome={goHome(null)} onAskAboutNode={askAboutNode} />}
       </main>
+
+      <Tutor open={tutorOpen} onOpenChange={setTutorOpen} domain={domain} question={tutorQuestion}
+        onQuestionTaken={() => setTutorQuestion(null)} onOpenLesson={open} />
 
       <footer className="foot">
         <p>NetVerse Academy · Progress is saved in this browser only. · <a href="#studio">Content studio</a></p>

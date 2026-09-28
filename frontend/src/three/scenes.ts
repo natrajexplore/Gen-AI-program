@@ -2,7 +2,7 @@
    - createHeroScene: the domain constellation on the home page
    - createTopologyScene: a per-domain network topology */
 import * as THREE from "three";
-import type { Domain, Topology } from "../types";
+import type { Domain, TopoNode, Topology } from "../types";
 
 // Reproduce r128 rendering: no colour management, linear output, legacy-style light units.
 THREE.ColorManagement.enabled = false;
@@ -441,7 +441,8 @@ function deviceMesh(kind: string) {
   return new THREE.Mesh(geo, mat);
 }
 
-export function createTopologyScene(canvas: HTMLCanvasElement, labelLayer: HTMLElement, topology: Topology, accent: string): SceneHandle | null {
+export function createTopologyScene(canvas: HTMLCanvasElement, labelLayer: HTMLElement, topology: Topology, accent: string,
+  onNodeClick?: (node: TopoNode) => void): SceneHandle | null {
   if (!webglOK()) return null;
   const st = stage(canvas, 45);
   const { scene, camera } = st;
@@ -508,6 +509,25 @@ export function createTopologyScene(canvas: HTMLCanvasElement, labelLayer: HTMLE
   const packets = packetSystem(pivot, segs, () => accent, Math.min(40, segs.length * 2), 0.7);
   const ctl = orbit(canvas, pivot, camera, { zoom: true, minZ: 6, maxZ: 18, spin: 0.1 });
 
+  /* Click a device (not a drag) to ask about it. */
+  const ev = listeners();
+  if (onNodeClick) {
+    const ray = new THREE.Raycaster(), mouse = new THREE.Vector2();
+    const pick = (e: MouseEvent) => {
+      const r = canvas.getBoundingClientRect();
+      mouse.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      ray.setFromCamera(mouse, camera);
+      const hit = ray.intersectObjects(meshes, false)[0];
+      return hit ? meshes.findIndex((m) => m === hit.object) : -1;
+    };
+    ev.on(canvas, "pointermove", (e) => { if (!ctl.state.dragging) canvas.style.cursor = pick(e) >= 0 ? "pointer" : ""; });
+    ev.on(canvas, "click", (e) => {
+      if (ctl.state.moved > 6) return;
+      const i = pick(e);
+      if (i >= 0) onNodeClick(topology.nodes[i]);
+    });
+  }
+
   const tmp = new THREE.Vector3();
   st.onFrame((dt, t) => {
     ctl.tick(dt);
@@ -523,5 +543,5 @@ export function createTopologyScene(canvas: HTMLCanvasElement, labelLayer: HTMLE
     });
   });
   st.start();
-  return { dispose() { ctl.dispose(); st.dispose(); labelLayer.innerHTML = ""; } };
+  return { dispose() { ev.off(); ctl.dispose(); st.dispose(); labelLayer.innerHTML = ""; } };
 }
