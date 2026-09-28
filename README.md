@@ -16,6 +16,7 @@ An all-in-one, 3D learning platform for networking. Every domain sits as a node 
 | IP Services (DHCP, NAT, NTP, SNMP, FHRP) | L3–L7 | Star |
 | Network Security (ACLs, NGFW, IPsec, 802.1X, Zero Trust) | L2–L7 | Defence-in-depth shells |
 | **PKI & Certificates** *(deep dive)*: crypto, X.509, CA hierarchy, SCEP/EST/ACME, CRL/OCSP, TLS, EAP-TLS | L5–L7 | Root → intermediate/issuing CAs → endpoints, OCSP |
+| **Post-Quantum Cryptography** *(deep dive)*: quantum threat, ML-KEM/ML-DSA/SLH-DSA, hybrid TLS 1.3, IKEv2, SSH, migration | L3–L7 | ML-DSA CA chain, hybrid TLS and IKEv2 peers, SSH, HSM, harvest-now eavesdropper |
 | **Cisco ISE Infrastructure** *(deep dive)*: personas, 802.1X/MAB, policy sets, profiling, guest/BYOD/posture, TrustSec, TACACS+ | L2–L7 | PAN/MnT, PSNs, NADs, endpoints, AD, pxGrid |
 | Data Centre (spine-leaf, VXLAN/EVPN, ACI, storage) | L2–L3 | Spine-leaf Clos fabric |
 | **Cisco ACI Data Centre** *(deep dive)*: APIC, tenant model, access policies, contracts, L3Out, Multi-Pod/Site, API | L2–L7 | APIC cluster, spines, leaves, EPGs, L3Out, PBR |
@@ -31,7 +32,7 @@ An all-in-one, 3D learning platform for networking. Every domain sits as a node 
 - **A 3D topology for each domain:** packets move along the links. Drag to rotate, scroll to zoom.
 - **Lessons:** organised into modules, with key points and config/CLI examples. You can mark each lesson complete.
 - **Quizzes:** instant feedback with an explanation for every answer. Your best score is remembered.
-- **Deep dives:** in-depth tracks for PKI, SD-WAN, Cisco ISE, Cisco ACI and Juniper Mist, with 5–6 modules each and a "Deep dives" filter on the home page.
+- **Deep dives:** in-depth tracks for PKI, post-quantum cryptography, SD-WAN, Cisco ISE, Cisco ACI and Juniper Mist, with 5–6 modules each and a "Deep dives" filter on the home page.
 - **Learning paths:** Network Associate, Enterprise & Campus, Data Centre & Cloud, Identity & Zero Trust, AI-Driven Wireless Campus, Service Provider and Security Engineer.
 - **Subnet Lab:** an IPv4 CIDR calculator with a binary view.
 - **Search:** covers every lesson, key point and CLI snippet.

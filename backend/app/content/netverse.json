@@ -3240,6 +3240,459 @@
       ]
     },
     {
+      "id": "pqc",
+      "name": "Post-Quantum Cryptography",
+      "short": "PQC",
+      "color": "#C084FC",
+      "layers": "L3–L7",
+      "proto": "ML-KEM · ML-DSA",
+      "level": "Advanced",
+      "hours": 18,
+      "topology": {
+        "nodes": [
+          {
+            "id": "ca-1",
+            "kind": "ca",
+            "label": "Root CA (ML-DSA)",
+            "pos": [
+              -3.2,
+              3,
+              0
+            ]
+          },
+          {
+            "id": "ca-2",
+            "kind": "ca",
+            "label": "Issuing CA (ML-DSA)",
+            "pos": [
+              -3.2,
+              1.5,
+              0
+            ]
+          },
+          {
+            "id": "idstore-1",
+            "kind": "idstore",
+            "label": "HSM / KMS",
+            "pos": [
+              -1.6,
+              3.2,
+              -1.2
+            ]
+          },
+          {
+            "id": "controller-1",
+            "kind": "controller",
+            "label": "Crypto inventory (CBOM)",
+            "pos": [
+              1,
+              2.5,
+              0.2
+            ]
+          },
+          {
+            "id": "server-1",
+            "kind": "server",
+            "label": "TLS 1.3 server",
+            "pos": [
+              0,
+              0.4,
+              0
+            ]
+          },
+          {
+            "id": "client-1",
+            "kind": "client",
+            "label": "Browser (X25519MLKEM768)",
+            "pos": [
+              2.6,
+              -1.2,
+              0.6
+            ]
+          },
+          {
+            "id": "router-1",
+            "kind": "router",
+            "label": "IKEv2 gateway (ML-KEM)",
+            "pos": [
+              -3.4,
+              -0.4,
+              0.6
+            ]
+          },
+          {
+            "id": "router-2",
+            "kind": "router",
+            "label": "IKEv2 gateway (ML-KEM)",
+            "pos": [
+              -1.4,
+              -1.8,
+              0.8
+            ]
+          },
+          {
+            "id": "server-2",
+            "kind": "server",
+            "label": "SSH host (mlkem768)",
+            "pos": [
+              3.4,
+              1.2,
+              -1.2
+            ]
+          },
+          {
+            "id": "host-1",
+            "kind": "host",
+            "label": "Admin (OpenSSH 10)",
+            "pos": [
+              4.2,
+              -0.8,
+              -2.4
+            ]
+          },
+          {
+            "id": "fw-1",
+            "kind": "fw",
+            "label": "Harvest-now eavesdropper",
+            "pos": [
+              0.8,
+              -1.9,
+              0.9
+            ]
+          },
+          {
+            "id": "ai-1",
+            "kind": "ai",
+            "label": "Future quantum computer",
+            "pos": [
+              3.8,
+              2.8,
+              2
+            ]
+          }
+        ],
+        "links": [
+          {
+            "from": "idstore-1",
+            "to": "ca-1",
+            "style": "solid"
+          },
+          {
+            "from": "ca-1",
+            "to": "ca-2",
+            "style": "solid"
+          },
+          {
+            "from": "ca-2",
+            "to": "server-1",
+            "style": "solid"
+          },
+          {
+            "from": "ca-2",
+            "to": "router-1",
+            "style": "solid"
+          },
+          {
+            "from": "server-1",
+            "to": "client-1",
+            "style": "solid"
+          },
+          {
+            "from": "router-1",
+            "to": "router-2",
+            "style": "solid"
+          },
+          {
+            "from": "server-2",
+            "to": "host-1",
+            "style": "solid"
+          },
+          {
+            "from": "fw-1",
+            "to": "client-1",
+            "style": "dashed"
+          },
+          {
+            "from": "fw-1",
+            "to": "router-2",
+            "style": "dashed"
+          },
+          {
+            "from": "ai-1",
+            "to": "fw-1",
+            "style": "dashed"
+          },
+          {
+            "from": "controller-1",
+            "to": "server-1",
+            "style": "dashed"
+          },
+          {
+            "from": "controller-1",
+            "to": "router-1",
+            "style": "dashed"
+          },
+          {
+            "from": "controller-1",
+            "to": "server-2",
+            "style": "dashed"
+          }
+        ],
+        "effects": []
+      },
+      "tagline": "Deep dive into post-quantum cryptography: the quantum threat, NIST's ML-KEM, ML-DSA and SLH-DSA, hybrid TLS 1.3, IKEv2 and SSH, and planning a crypto-agile migration.",
+      "deep": true,
+      "modules": [
+        {
+          "title": "The Quantum Threat",
+          "lessons": [
+            {
+              "t": "What a quantum computer breaks",
+              "body": "Shor's algorithm, run on a large, error-corrected quantum computer, solves integer factoring and discrete logarithms efficiently. That breaks every public-key algorithm the internet relies on today: RSA, Diffie-Hellman, ECDH and ECDSA. Symmetric ciphers and hashes are only weakened: Grover's algorithm gives at most a square-root speed-up on brute-force search, and it parallelises poorly.",
+              "points": [
+                "Broken by Shor: RSA, finite-field DH, ECDH (including X25519), ECDSA and EdDSA",
+                "Weakened by Grover: AES, SHA-2 and SHA-3, in theory halving the security level",
+                "Safe choice today: AES-256 and SHA-384 or stronger (CNSA 2.0 requires them)",
+                "No cryptographically relevant quantum computer (CRQC) exists yet, and estimates of when one will arrive vary widely"
+              ]
+            },
+            {
+              "t": "Harvest now, decrypt later",
+              "body": "An adversary can record encrypted traffic today and store it until a quantum computer can break the key exchange, then decrypt it. That makes key exchange the urgent problem: anything that must stay confidential for years is already exposed. Signatures are less urgent, because forging one later does not compromise sessions that have already happened.",
+              "points": [
+                "Mosca's inequality: if x + y > z you are already late (x = how long data must stay secret, y = time to migrate, z = time until a CRQC)",
+                "Migrate key exchange first (confidentiality), then signatures and certificates (authentication)",
+                "Recorded TLS, IKE and SSH handshakes are all targets",
+                "Long-lived secrets: health and government records, intellectual property, site-to-site VPN traffic"
+              ]
+            },
+            {
+              "t": "PQC versus quantum key distribution",
+              "body": "Post-quantum cryptography is new mathematics that runs on ordinary computers over any IP network. Quantum key distribution (QKD) instead uses physics to share keys over dedicated fibre or free-space links. QKD needs special hardware, works point to point over limited distances and cannot authenticate the endpoints by itself, so national agencies such as NSA (US), NCSC (UK) and ANSSI (France) favour PQC for most uses.",
+              "points": [
+                "PQC: a software and firmware upgrade to existing protocols",
+                "QKD: dedicated optical links, and trusted relay nodes to go beyond roughly 100 km of fibre",
+                "QKD still needs classical authentication, which must itself be quantum-safe"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "NIST Standards: ML-KEM, ML-DSA and SLH-DSA",
+          "lessons": [
+            {
+              "t": "Lattice KEMs and ML-KEM (FIPS 203)",
+              "body": "In August 2024 NIST published its first three post-quantum standards. FIPS 203 defines ML-KEM, derived from CRYSTALS-Kyber and based on the module learning-with-errors lattice problem. It is a key encapsulation mechanism: one side sends a public key, the other encapsulates a random secret to it, and both derive the same 32-byte shared secret. It is not a drop-in replacement for Diffie-Hellman, because it has no static-static mode, but it maps cleanly onto the ephemeral key exchanges used by TLS, IKEv2 and SSH.",
+              "points": [
+                "ML-KEM-512 / 768 / 1024 target NIST security categories 1 / 3 / 5",
+                "ML-KEM-768: 1,184-byte public key, 1,088-byte ciphertext, 32-byte shared secret (X25519: 32-byte keys)",
+                "CPU cost is comparable to X25519; the real cost is extra bytes on the wire",
+                "HQC, a code-based KEM, was selected in 2025 as a backup built on different mathematics"
+              ]
+            },
+            {
+              "t": "Post-quantum signatures",
+              "body": "FIPS 204 defines ML-DSA (from CRYSTALS-Dilithium), a lattice signature and the general-purpose default. FIPS 205 defines SLH-DSA (from SPHINCS+), which relies only on hash functions: the conservative choice, at the cost of much larger and slower signatures. FN-DSA (from Falcon) is being standardised as FIPS 206 for uses that need small signatures, and it is harder to implement safely.",
+              "points": [
+                "ML-DSA-44 / 65 / 87 signatures: 2,420 / 3,309 / 4,627 bytes (ECDSA P-256: about 72)",
+                "ML-DSA-65 public key: 1,952 bytes (P-256: 65 bytes uncompressed)",
+                "SLH-DSA signatures range from about 7.8 KB to 49.9 KB",
+                "LMS and XMSS (NIST SP 800-208) are stateful hash-based signatures for firmware and code signing; reusing a one-time key state breaks their security"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "PQC in TLS 1.3",
+          "lessons": [
+            {
+              "t": "Hybrid key exchange: X25519MLKEM768",
+              "body": "Hybrid key exchange runs a classical and a post-quantum algorithm together and feeds both shared secrets into the key schedule, so the session stays secure as long as either one holds. X25519MLKEM768 is the hybrid TLS group that Chrome, Firefox, Cloudflare and OpenSSL 3.5 enable by default. The client's key share grows from 32 bytes to 1,216, which pushes the ClientHello past a single packet and exposed middleboxes that mishandled large ClientHellos.",
+              "points": [
+                "TLS group codepoint 0x11EC; the earlier X25519Kyber768Draft00 group is retired",
+                "Client key share: 32-byte X25519 key + 1,184-byte ML-KEM-768 public key",
+                "Server key share: 32 + 1,088 bytes",
+                "TLS-inspecting firewalls and load balancers must support the group, or connections fall back to classical or fail",
+                "Pure ML-KEM groups exist too, but hybrid is the usual deployment choice"
+              ],
+              "cli": "# OpenSSL 3.5+: list the available KEMs and test a hybrid handshake\nopenssl list -kem-algorithms\nopenssl s_client -connect example.com:443 -groups X25519MLKEM768 </dev/null 2>/dev/null | grep -i group\n\n# nginx built against OpenSSL 3.5+: prefer hybrid, keep a classical fallback\nssl_protocols TLSv1.3 TLSv1.2;\nssl_ecdh_curve X25519MLKEM768:X25519:prime256v1;"
+            },
+            {
+              "t": "Post-quantum certificates and authentication",
+              "body": "Replacing RSA and ECDSA in certificates is harder than replacing the key exchange. An ML-DSA-65 certificate carries a 1,952-byte public key and a 3,309-byte signature, and a TLS handshake sends a chain of certificates plus a handshake signature and certificate transparency proofs, adding well over 10 KB. That can overflow the TCP initial congestion window (about 14.6 KB with 10 segments) and cost an extra round trip. Because authentication cannot be attacked retroactively, most organisations deploy hybrid key exchange first and post-quantum certificates later.",
+              "points": [
+                "Composite certificates (IETF LAMPS work) pair ML-DSA with ECDSA or RSA in one certificate",
+                "Private PKIs (VPN, 802.1X/EAP-TLS, device identity) can move before the public WebPKI",
+                "Check that HSMs, CAs, RADIUS servers and network operating systems can handle ML-DSA keys before issuing them",
+                "Ideas for shrinking the handshake include Merkle Tree Certificates and KEMTLS"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "IPsec, SSH and Network Protocols",
+          "lessons": [
+            {
+              "t": "IKEv2 with ML-KEM",
+              "body": "IKEv2 was designed around one Diffie-Hellman exchange whose public values fit easily in a single UDP message. RFC 9370 lets peers negotiate up to seven additional key exchanges after the classical one, and RFC 9242 adds the IKE_INTERMEDIATE exchange so large post-quantum public keys can be protected and fragmented (RFC 7383) like other encrypted IKE messages. A typical proposal keeps X25519 or ECDH as the first exchange and adds ML-KEM-768 as additional key exchange 1.",
+              "points": [
+                "Transform types ADDKE1 to ADDKE7 carry the additional key exchanges",
+                "RFC 8784 post-quantum preshared keys (PPKs) are an interim option: mix a strong symmetric secret into the IKE keys",
+                "Large KE payloads rely on IKE fragmentation and clean UDP 500/4500 paths",
+                "Check vendor support: ML-KEM in IKEv2 has arrived later than hybrid TLS on most platforms"
+              ],
+              "cli": "# strongSwan 6.x swanctl.conf (abridged): X25519 first, then ML-KEM-768 as additional key exchange 1\nconnections {\n  site-b {\n    version = 2\n    proposals = aes256gcm16-prfsha384-x25519-ke1_mlkem768\n    children {\n      net {\n        esp_proposals = aes256gcm16-x25519-ke1_mlkem768\n      }\n    }\n  }\n}"
+            },
+            {
+              "t": "SSH: post-quantum by default",
+              "body": "OpenSSH moved first. Version 9.0 (2022) made the hybrid sntrup761x25519-sha512 key exchange the default, and OpenSSH 10.0 (2025) switched the default to mlkem768x25519-sha256, which pairs ML-KEM-768 with X25519. Both ends must support the algorithm, so older servers and many network devices quietly negotiate a classical exchange. Host and user keys are still Ed25519, ECDSA or RSA signatures, which is acceptable while no quantum computer exists to forge them in real time.",
+              "points": [
+                "Network operating systems and SSH libraries often lag OpenSSH: audit jump hosts and automation tooling",
+                "Recent OpenSSH releases warn when a connection falls back to a non-post-quantum key exchange",
+                "Prefer the hybrid algorithms in sshd_config and keep a classical fallback only where needed"
+              ],
+              "cli": "# which post-quantum key exchanges does this client support?\nssh -Q kex | grep -E 'mlkem|sntrup'\n\n# what did this session actually negotiate?\nssh -v admin@jump01.example.net exit 2>&1 | grep 'kex: algorithm'\n\n# sshd_config: offer hybrid PQ first, keep a classical fallback\nKexAlgorithms mlkem768x25519-sha256,sntrup761x25519-sha512@openssh.com,curve25519-sha256"
+            },
+            {
+              "t": "Other network protocols",
+              "body": "Protocols that use only symmetric keys are not threatened by Shor's algorithm, as long as the keys are long enough. Anything built on TLS inherits post-quantum protection from its TLS stack once that stack is upgraded. The hard cases are protocols with tight size limits, where large post-quantum keys and signatures do not fit comfortably.",
+              "points": [
+                "Symmetric only (safe with 256-bit keys): MACsec with a static CAK, TCP-AO, OSPF and IS-IS HMAC authentication",
+                "Inherit from TLS: EAP-TLS, RADIUS over TLS (RadSec), NETCONF over TLS, gNMI/gRPC, syslog over TLS",
+                "EAP-TLS with post-quantum certificate chains needs many more EAP round trips",
+                "DNSSEC is hard: large post-quantum signatures clash with UDP response sizes"
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Migration and Crypto-Agility",
+          "lessons": [
+            {
+              "t": "Inventory and prioritise",
+              "body": "You cannot migrate what you cannot find. Start with a cryptographic inventory: every protocol, library, certificate, key and device that uses public-key cryptography, with its algorithm, key size and how long the data it protects must stay secret. A cryptographic bill of materials (CBOM, part of CycloneDX) records this in a machine-readable form.",
+              "points": [
+                "Sources: TLS and SSH scans, certificate stores, configuration audits, SBOMs and handshake telemetry",
+                "Rank by data lifetime and exposure: internet-facing VPN and TLS endpoints first",
+                "Long-lived hardware (routers, OT, HSMs, smart meters) needs PQC-capable firmware and secure boot before it is deployed",
+                "Track vendor roadmaps: some devices will need replacing, not just upgrading"
+              ]
+            },
+            {
+              "t": "Timelines and guidance",
+              "body": "Governments have set dates. NSA's CNSA 2.0 suite requires ML-KEM-1024 and ML-DSA-87 (with AES-256 and SHA-384) for US national security systems, and expects networking equipment to prefer CNSA 2.0 algorithms by 2026 and use them exclusively by 2030. NIST's transition guidance (IR 8547) proposes deprecating RSA and elliptic-curve algorithms at the 112-bit security level after 2030 and disallowing them after 2035. These documents are still being updated, so check the current versions.",
+              "points": [
+                "CNSA 2.0: ML-KEM-1024, ML-DSA-87, LMS/XMSS for firmware signing, AES-256, SHA-384/512",
+                "UK NCSC: discovery and planning by 2028, priority migrations by 2031, complete by 2035",
+                "EU coordinated roadmap: start by the end of 2026, protect high-risk systems by 2030",
+                "Regulated sectors (finance, health, telecoms) often add their own deadlines"
+              ]
+            },
+            {
+              "t": "Crypto-agility and testing",
+              "body": "PQC will not be the last migration: HQC and FN-DSA are still arriving, and parameters may change. Crypto-agility means algorithms are configuration, not code: central TLS and IKE policies, libraries that can be upgraded independently, and certificates that can be reissued automatically. Test hybrid modes in a lab before production, because the failures are usually in the network, not in the mathematics.",
+              "points": [
+                "Test through every middlebox: firewalls, TLS inspection, load balancers and IPS",
+                "Watch MTU, fragmentation and handshake size, especially for UDP-based IKE and DTLS",
+                "Measure: ML-KEM is fast on the CPU; the cost is extra bytes and sometimes an extra round trip",
+                "Automate certificate issuance (ACME, EST) so you can re-key at scale"
+              ]
+            }
+          ]
+        }
+      ],
+      "quiz": [
+        {
+          "q": "Why is key exchange more urgent to migrate than signatures?",
+          "o": [
+            "Signatures are already quantum-safe",
+            "Recorded key exchanges can be decrypted later, but a signature forged later cannot affect past sessions",
+            "Key exchange uses AES",
+            "NIST has not standardised any post-quantum signatures"
+          ],
+          "a": 1,
+          "why": "Harvest now, decrypt later targets confidentiality; authentication only has to hold at the moment of the handshake."
+        },
+        {
+          "q": "Which of these does Shor's algorithm NOT break?",
+          "o": [
+            "RSA-3072",
+            "ECDSA P-256",
+            "AES-256",
+            "X25519"
+          ],
+          "a": 2,
+          "why": "Shor breaks factoring and discrete logarithms. AES-256 is symmetric and is only weakened by Grover, which still leaves a large security margin."
+        },
+        {
+          "q": "What is ML-KEM?",
+          "o": [
+            "A lattice-based key encapsulation mechanism standardised in FIPS 203",
+            "A hash-based signature scheme",
+            "A quantum key distribution protocol",
+            "The TLS 1.3 record-layer cipher"
+          ],
+          "a": 0,
+          "why": "ML-KEM, derived from CRYSTALS-Kyber, is NIST's primary post-quantum KEM."
+        },
+        {
+          "q": "With the X25519MLKEM768 hybrid group, when does the session key stay secure?",
+          "o": [
+            "Only if both X25519 and ML-KEM are unbroken",
+            "If either X25519 or ML-KEM remains unbroken",
+            "Only if ML-KEM is unbroken",
+            "Only once post-quantum certificates are deployed"
+          ],
+          "a": 1,
+          "why": "Both shared secrets feed the key schedule, so an attacker has to break both."
+        },
+        {
+          "q": "Which signature standard relies only on hash functions?",
+          "o": [
+            "ML-DSA (FIPS 204)",
+            "SLH-DSA (FIPS 205)",
+            "FN-DSA (FIPS 206)",
+            "ECDSA"
+          ],
+          "a": 1,
+          "why": "SLH-DSA (SPHINCS+) is hash-based: very conservative, with large signatures."
+        },
+        {
+          "q": "Mosca's inequality says you are already late when:",
+          "o": [
+            "Data secrecy time plus migration time exceeds the time until a quantum computer arrives",
+            "Migration will take less than a year",
+            "Your RSA keys are shorter than 2,048 bits",
+            "A quantum computer has been publicly demonstrated"
+          ],
+          "a": 0,
+          "why": "If x + y > z, data encrypted today will still need protecting when a CRQC exists."
+        },
+        {
+          "q": "Which RFC lets IKEv2 negotiate additional post-quantum key exchanges?",
+          "o": [
+            "RFC 9370",
+            "RFC 8446",
+            "RFC 5280",
+            "RFC 7030"
+          ],
+          "a": 0,
+          "why": "RFC 9370 defines up to seven additional key exchanges, carried in IKE_INTERMEDIATE (RFC 9242)."
+        },
+        {
+          "q": "What is the main practical cost of hybrid post-quantum key exchange in TLS?",
+          "o": [
+            "Much slower CPU operations",
+            "Larger handshake messages that can trip up middleboxes or need extra packets",
+            "It removes forward secrecy",
+            "It requires new certificates"
+          ],
+          "a": 1,
+          "why": "ML-KEM is fast, but its keys and ciphertexts add over a kilobyte to each side of the handshake."
+        }
+      ]
+    },
+    {
       "id": "ise",
       "name": "Cisco ISE Infrastructure",
       "short": "ISE",

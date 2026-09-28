@@ -55,7 +55,7 @@ export function Home({ catalog, active, onOpen }: Props) {
         <div className="hero-copy">
           <p className="eyebrow">All-in-one networking academy</p>
           <h1>Learn every layer of the network.</h1>
-          <p className="lede">Eighteen domains on one map, from the OSI model to BGP and Wi-Fi 7, plus deep dives into PKI, Cisco&nbsp;ISE, ACI, SD-WAN and Juniper&nbsp;Mist. Drag to spin the map, and click any node to start learning.</p>
+          <p className="lede">Nineteen domains on one map, from the OSI model to BGP and Wi-Fi 7, plus deep dives into PKI, post-quantum cryptography, Cisco&nbsp;ISE, ACI, SD-WAN and Juniper&nbsp;Mist. Drag to spin the map, and click any node to start learning.</p>
           <Search domains={domains} onPick={onOpen} />
           <Stats id="stats" pairs={[
             ["domains", String(domains.length)],

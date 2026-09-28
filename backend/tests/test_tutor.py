@@ -15,6 +15,13 @@ def test_retrieval_finds_the_right_lessons():
     assert ix.search("zzzz qqqq") == []
 
 
+def test_hyphenated_words_match_their_parts():
+    ix = tutor.LessonIndex(BASE)
+    hits = [r["title"] for r in ix.search('what does the "Harvest-now eavesdropper" do?', domain_id="pqc", k=3)]
+    assert "Harvest now, decrypt later" in hits
+    assert ix.search("ML-KEM")[0]["domain_id"] == "pqc"
+
+
 def test_current_domain_is_preferred():
     ix = tutor.LessonIndex(BASE)
     assert ix.search("802.1X", domain_id="wireless")[0]["domain_id"] == "wireless"

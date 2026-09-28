@@ -14,7 +14,13 @@ STOP = set("a an and are as at be by can do does for from how i if in into is it
 
 
 def tokenize(text: str) -> list[str]:
-    return [t for t in TOKEN.findall(text.lower()) if t not in STOP]
+    """Words, keeping 'ml-kem' or '802.1x' whole, plus the parts of hyphenated/slashed words ('harvest-now')."""
+    out = []
+    for t in TOKEN.findall(text.lower()):
+        out.append(t)
+        if "-" in t or "/" in t:
+            out += re.split(r"[-/]", t)
+    return [t for t in out if t and t not in STOP]
 
 
 class LessonIndex:

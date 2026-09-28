@@ -7,11 +7,11 @@ client = TestClient(app)
 
 def test_catalog_matches_original_content():
     data = client.get("/api/catalog").json()
-    assert len(data["domains"]) == 18
+    assert len(data["domains"]) == 19
     assert len(data["paths"]) == 7
     lessons = sum(len(m["lessons"]) for d in data["domains"] for m in d["modules"])
     quiz = sum(len(d["quiz"]) for d in data["domains"])
-    assert (lessons, quiz) == (123, 84)
+    assert (lessons, quiz) == (136, 92)
 
 
 def test_path_steps_reference_real_domains():
